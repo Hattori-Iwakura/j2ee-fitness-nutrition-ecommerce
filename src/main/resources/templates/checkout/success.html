@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Order Placed - FitShop')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="container mt-5">
+    <div class="text-center">
+        <i class="bi bi-check-circle-fill text-success display-1"></i>
+        <h2 class="mt-3">Order Placed Successfully!</h2>
+        <p class="fs-5">Your order code: <strong class="text-primary" th:text="${order.orderCode}">FS-XXXXXXXX</strong></p>
+        <p class="text-muted">Total: <strong th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">Amount</strong></p>
+        <div class="mt-4">
+            <a th:href="@{/orders}" class="btn btn-primary me-2">View My Orders</a>
+            <a th:href="@{/products}" class="btn btn-outline-secondary">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

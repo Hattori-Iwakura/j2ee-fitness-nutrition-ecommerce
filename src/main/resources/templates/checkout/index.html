@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Checkout - FitShop')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="container mt-4">
+    <h2><i class="bi bi-credit-card"></i> Checkout</h2>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header bg-dark text-white">Shipping Information</div>
+                <div class="card-body">
+                    <form th:action="@{/checkout}" th:object="${checkoutRequest}" method="post">
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullName" th:field="*{fullName}"
+                                   th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" class="form-control" id="phone" th:field="*{phone}"
+                                   th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" rows="3" th:field="*{address}"
+                                      th:classappend="${#fields.hasErrors('address')} ? 'is-invalid'"></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="note" class="form-label">Note (optional)</label>
+                            <textarea class="form-control" id="note" rows="2" th:field="*{note}"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="bi bi-check-circle"></i> Place Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header bg-dark text-white">Order Summary</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between" th:each="item : ${cartItems}">
+                        <div>
+                            <strong th:text="${item.productName}">Product</strong><br>
+                            <small class="text-muted" th:text="${item.flavor} + ' - ' + ${item.weight}">Variant</small>
+                            <small class="text-muted" th:text="' x' + ${item.quantity}">Qty</small>
+                        </div>
+                        <span class="fw-bold" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Subtotal</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between fs-5 bg-light">
+                        <strong>Total</strong>
+                        <strong class="text-primary" th:text="${#numbers.formatDecimal(cartTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Total</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

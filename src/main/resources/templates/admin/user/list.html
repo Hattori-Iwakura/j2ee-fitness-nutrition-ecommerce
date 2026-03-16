@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Users - Admin')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="d-flex">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+    <div class="flex-grow-1 p-4">
+        <h2>Users</h2>
+        <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
+        <table class="table table-hover mt-3">
+            <thead class="table-dark">
+                <tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.id}">1</td>
+                    <td th:text="${user.fullName}">Name</td>
+                    <td th:text="${user.email}">Email</td>
+                    <td th:text="${user.phone}">Phone</td>
+                    <td><span class="badge" th:classappend="${user.role.name() == 'ADMIN'} ? 'bg-danger' : 'bg-primary'" th:text="${user.role}">Role</span></td>
+                    <td><span class="badge" th:classappend="${user.enabled} ? 'bg-success' : 'bg-secondary'" th:text="${user.enabled} ? 'Active' : 'Disabled'">Status</span></td>
+                    <td>
+                        <form th:action="@{/admin/users/{id}/toggle(id=${user.id})}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm"
+                                    th:classappend="${user.enabled} ? 'btn-outline-warning' : 'btn-outline-success'"
+                                    th:text="${user.enabled} ? 'Disable' : 'Enable'">Toggle</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

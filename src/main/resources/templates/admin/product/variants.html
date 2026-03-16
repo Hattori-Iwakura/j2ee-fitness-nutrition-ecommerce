@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Product Variants - Admin')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="d-flex">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+    <div class="flex-grow-1 p-4">
+        <h2>Variants for: <span th:text="${product.name}">Product</span></h2>
+        <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
+
+        <!-- Existing Variants -->
+        <table class="table table-hover mt-3" th:if="${!product.variants.isEmpty()}">
+            <thead class="table-dark">
+                <tr><th>ID</th><th>Flavor</th><th>Weight</th><th>Price (VND)</th><th>Stock</th><th>SKU</th><th>Active</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="v : ${product.variants}">
+                    <td th:text="${v.id}">1</td>
+                    <td th:text="${v.flavor}">Flavor</td>
+                    <td th:text="${v.weight}">Weight</td>
+                    <td th:text="${#numbers.formatDecimal(v.price, 0, 'COMMA', 0, 'POINT')}">Price</td>
+                    <td th:text="${v.stock}">0</td>
+                    <td th:text="${v.sku}">SKU</td>
+                    <td><span class="badge" th:classappend="${v.active} ? 'bg-success' : 'bg-secondary'" th:text="${v.active} ? 'Active' : 'Inactive'">Status</span></td>
+                    <td>
+                        <form th:action="@{/admin/products/{pid}/variants/delete/{vid}(pid=${product.id}, vid=${v.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('Delete this variant?')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Add Variant Form -->
+        <div class="card mt-4">
+            <div class="card-header bg-dark text-white">Add New Variant</div>
+            <div class="card-body">
+                <form th:action="@{/admin/products/{id}/variants/save(id=${product.id})}" th:object="${variant}" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Flavor</label>
+                            <input type="text" class="form-control" th:field="*{flavor}" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Weight</label>
+                            <input type="text" class="form-control" th:field="*{weight}" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Price (VND)</label>
+                            <input type="number" class="form-control" th:field="*{price}" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Stock</label>
+                            <input type="number" class="form-control" th:field="*{stock}" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">SKU</label>
+                            <input type="text" class="form-control" th:field="*{sku}">
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">Add</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <a th:href="@{/admin/products}" class="btn btn-secondary mt-3">Back to Products</a>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

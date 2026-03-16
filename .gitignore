@@ -1,37 +1,10 @@
-### Java ###
-# Bỏ qua các file đã được biên dịch
-*.class
-*.log
-*.ctxt
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-### Maven (Công cụ quản lý thư viện và build dự án) ###
-# Bỏ qua thư mục target (nơi chứa kết quả sau khi build, dung lượng rất nặng)
+HELP.md
 target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-# Lưu ý: Không bỏ qua .mvn/wrapper/maven-wrapper.properties vì người khác cần nó để chạy Maven
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-### IDEs (Môi trường lập trình) ###
-# IntelliJ IDEA
-.idea/
-*.iws
-*.iml
-*.ipr
-out/
-
-# Eclipse / Spring Tool Suite (STS)
+### STS ###
 .apt_generated
 .classpath
 .factorypath
@@ -40,27 +13,24 @@ out/
 .springBeans
 .sts4-cache
 
-# NetBeans
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-### OS (File rác của hệ điều hành) ###
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
+### VS Code ###
+.vscode/
 
-# Windows
-Thumbs.db
-ehthumbs.db
-$RECYCLE.BIN/
-
-### Môi trường và Bảo mật ###
-# Bỏ qua các file chứa biến môi trường nhạy cảm (như mật khẩu Database, Secret Key)
-.env
-.env.local
-application-dev.properties
-application-dev.yml
+### Docs (internal dev notes) ###
+docs/

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head(${product.name} + ' - FitShop')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/products}">Products</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/products(category=${product.category.slug})}" th:text="${product.category.name}">Category</a></li>
+            <li class="breadcrumb-item active" th:text="${product.name}">Product</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-body text-center p-5 bg-light">
+                    <i class="bi bi-box-seam display-1 text-muted"></i>
+                    <p class="mt-2 text-muted">Product Image</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <h1 th:text="${product.name}">Product Name</h1>
+            <p class="text-muted" th:text="'Brand: ' + ${product.brand}">Brand</p>
+            <p th:text="${product.description}">Description</p>
+
+            <hr>
+
+            <h5>Select Variant:</h5>
+            <form th:action="@{/cart/add}" method="post">
+                <div class="mb-3">
+                    <div class="btn-group-vertical w-100" role="group">
+                        <div th:each="variant, iter : ${product.variants}" class="form-check border rounded p-3 mb-2"
+                             th:classappend="${!variant.active or variant.stock <= 0} ? 'bg-light text-muted'">
+                            <input class="form-check-input" type="radio" name="variantId"
+                                   th:id="'variant-' + ${variant.id}"
+                                   th:value="${variant.id}"
+                                   th:checked="${iter.index == 0}"
+                                   th:disabled="${!variant.active or variant.stock <= 0}">
+                            <label class="form-check-label w-100" th:for="'variant-' + ${variant.id}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <strong th:text="${variant.flavor}">Flavor</strong>
+                                        <span class="text-muted"> - </span>
+                                        <span th:text="${variant.weight}">Weight</span>
+                                    </span>
+                                    <span>
+                                        <strong class="text-primary" th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</strong>
+                                        <small class="ms-2 text-success" th:if="${variant.stock > 0}" th:text="'(' + ${variant.stock} + ' in stock)'"></small>
+                                        <small class="ms-2 text-danger" th:if="${variant.stock <= 0}">Out of stock</small>
+                                    </span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3 d-flex align-items-center gap-3">
+                    <label for="quantity" class="form-label mb-0">Quantity:</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" max="99" style="width: 80px;">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <i class="bi bi-cart-plus"></i> Add to Cart
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

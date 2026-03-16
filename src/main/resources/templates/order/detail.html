@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Order Details - FitShop')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="container mt-4">
+    <h2>Order: <span th:text="${order.orderCode}">FS-XXXXXXXX</span></h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">Order Items</div>
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Variant</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="detail : ${order.orderDetails}">
+                            <td th:text="${detail.variant.product.name}">Product</td>
+                            <td th:text="${detail.variant.flavor} + ' - ' + ${detail.variant.weight}">Variant</td>
+                            <td th:text="${#numbers.formatDecimal(detail.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</td>
+                            <td th:text="${detail.quantity}">Qty</td>
+                            <td class="fw-bold" th:text="${#numbers.formatDecimal(detail.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Subtotal</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-end fw-bold">Total:</td>
+                            <td class="fw-bold text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">Total</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">Order Info</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Status:</strong>
+                        <span class="badge"
+                              th:classappend="${order.status.name() == 'PENDING'} ? 'bg-warning text-dark' :
+                                              (${order.status.name() == 'CONFIRMED'} ? 'bg-info' :
+                                              (${order.status.name() == 'SHIPPING'} ? 'bg-primary' :
+                                              (${order.status.name() == 'DELIVERED'} ? 'bg-success' : 'bg-danger')))"
+                              th:text="${order.status}">Status</span>
+                    </li>
+                    <li class="list-group-item"><strong>Date:</strong> <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></span></li>
+                    <li class="list-group-item"><strong>Name:</strong> <span th:text="${order.fullName}"></span></li>
+                    <li class="list-group-item"><strong>Phone:</strong> <span th:text="${order.phone}"></span></li>
+                    <li class="list-group-item"><strong>Address:</strong> <span th:text="${order.address}"></span></li>
+                    <li class="list-group-item" th:if="${order.note != null and !order.note.isEmpty()}"><strong>Note:</strong> <span th:text="${order.note}"></span></li>
+                </ul>
+            </div>
+            <a th:href="@{/orders}" class="btn btn-outline-secondary w-100">Back to Orders</a>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

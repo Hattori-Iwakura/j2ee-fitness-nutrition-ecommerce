@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Categories - Admin')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="d-flex">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+    <div class="flex-grow-1 p-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Categories</h2>
+            <a th:href="@{/admin/categories/create}" class="btn btn-primary"><i class="bi bi-plus"></i> New Category</a>
+        </div>
+        <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
+        <table class="table table-hover mt-3">
+            <thead class="table-dark">
+                <tr><th>ID</th><th>Name</th><th>Slug</th><th>Active</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="cat : ${categories}">
+                    <td th:text="${cat.id}">1</td>
+                    <td th:text="${cat.name}">Name</td>
+                    <td th:text="${cat.slug}">slug</td>
+                    <td><span class="badge" th:classappend="${cat.active} ? 'bg-success' : 'bg-secondary'" th:text="${cat.active} ? 'Active' : 'Inactive'">Status</span></td>
+                    <td>
+                        <a th:href="@{/admin/categories/edit/{id}(id=${cat.id})}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form th:action="@{/admin/categories/delete/{id}(id=${cat.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('Are you sure?')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

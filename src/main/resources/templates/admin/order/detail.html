@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Order Detail - Admin')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="d-flex">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+    <div class="flex-grow-1 p-4">
+        <h2>Order: <span th:text="${order.orderCode}">Code</span></h2>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <table class="table">
+                    <thead class="table-dark">
+                        <tr><th>Product</th><th>Variant</th><th>Price</th><th>Qty</th><th>Subtotal</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="d : ${order.orderDetails}">
+                            <td th:text="${d.variant.product.name}">Product</td>
+                            <td th:text="${d.variant.flavor} + ' - ' + ${d.variant.weight}">Variant</td>
+                            <td th:text="${#numbers.formatDecimal(d.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</td>
+                            <td th:text="${d.quantity}">1</td>
+                            <td class="fw-bold" th:text="${#numbers.formatDecimal(d.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Subtotal</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr><td colspan="4" class="text-end fw-bold">Total:</td>
+                            <td class="fw-bold text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">Total</td></tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header bg-dark text-white">Customer Info</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Name:</strong> <span th:text="${order.fullName}"></span></li>
+                        <li class="list-group-item"><strong>Phone:</strong> <span th:text="${order.phone}"></span></li>
+                        <li class="list-group-item"><strong>Address:</strong> <span th:text="${order.address}"></span></li>
+                        <li class="list-group-item" th:if="${order.note}"><strong>Note:</strong> <span th:text="${order.note}"></span></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-header bg-dark text-white">Update Status</div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/orders/{id}/status(id=${order.id})}" method="post">
+                            <select name="status" class="form-select mb-2">
+                                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == order.status}">Status</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary w-100">Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a th:href="@{/admin/orders}" class="btn btn-secondary mt-3">Back to Orders</a>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>
