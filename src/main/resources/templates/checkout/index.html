@@ -37,6 +37,27 @@
                             <label for="note" class="form-label">Note (optional)</label>
                             <textarea class="form-control" id="note" rows="2" th:field="*{note}"></textarea>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Payment Method</label>
+                            <div class="form-check border rounded p-3 mb-2">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="pm-cod" value="COD" checked>
+                                <label class="form-check-label" for="pm-cod">
+                                    <i class="bi bi-cash-coin"></i> Cash on Delivery (COD)
+                                </label>
+                            </div>
+                            <div class="form-check border rounded p-3 mb-2">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="pm-bank" value="BANK_TRANSFER">
+                                <label class="form-check-label" for="pm-bank">
+                                    <i class="bi bi-bank"></i> Bank Transfer
+                                </label>
+                            </div>
+                            <div class="form-check border rounded p-3 mb-2">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="pm-ewallet" value="E_WALLET">
+                                <label class="form-check-label" for="pm-ewallet">
+                                    <i class="bi bi-wallet2"></i> E-Wallet
+                                </label>
+                            </div>
+                        </div>
                         <button type="submit" class="btn btn-primary btn-lg w-100">
                             <i class="bi bi-check-circle"></i> Place Order
                         </button>
@@ -57,11 +78,40 @@
                         </div>
                         <span class="fw-bold" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Subtotal</span>
                     </li>
+                    <li class="list-group-item d-flex justify-content-between fs-5">
+                        <strong>Subtotal</strong>
+                        <strong th:text="${#numbers.formatDecimal(cartTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Subtotal</strong>
+                    </li>
+                    <li class="list-group-item" th:if="${discount != null}">
+                        <div class="d-flex justify-content-between text-success">
+                            <span>Discount (<span th:text="${couponCode}">CODE</span>)</span>
+                            <span th:text="'-' + ${#numbers.formatDecimal(discount, 0, 'COMMA', 0, 'POINT')} + ' VND'">-50,000 VND</span>
+                        </div>
+                    </li>
                     <li class="list-group-item d-flex justify-content-between fs-5 bg-light">
                         <strong>Total</strong>
-                        <strong class="text-primary" th:text="${#numbers.formatDecimal(cartTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Total</strong>
+                        <strong class="text-primary" th:text="${#numbers.formatDecimal(finalTotal != null ? finalTotal : cartTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Total</strong>
                     </li>
                 </ul>
+                <!-- Coupon Section -->
+                <div class="card-body">
+                    <div th:if="${couponError}" class="alert alert-danger small mb-2" th:text="${couponError}"></div>
+                    <div th:if="${success}" class="alert alert-success small mb-2" th:text="${success}"></div>
+                    <div th:if="${couponCode != null}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-success"><i class="bi bi-ticket-perforated"></i> <span th:text="${couponCode}">CODE</span></span>
+                            <form th:action="@{/checkout/remove-coupon}" method="post">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                    <form th:if="${couponCode == null}" th:action="@{/checkout/apply-coupon}" method="post">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="couponCode" placeholder="Coupon code" required>
+                            <button type="submit" class="btn btn-outline-primary">Apply</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

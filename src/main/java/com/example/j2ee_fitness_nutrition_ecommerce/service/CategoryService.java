@@ -10,6 +10,7 @@ public interface CategoryService {
     List<Category> findAll();
     Optional<Category> findById(Long id);
     Optional<Category> findBySlug(String slug);
+    Optional<Category> findActiveBySlug(String slug);
     Category save(Category category);
     void deleteById(Long id);
 }

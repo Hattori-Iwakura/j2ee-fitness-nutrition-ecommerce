@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Reviews - Admin')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="d-flex">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+    <div class="flex-grow-1 p-4">
+        <h2>Reviews</h2>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Product</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="review : ${reviews}">
+                    <td th:text="${review.id}">1</td>
+                    <td th:text="${review.user.fullName}">User</td>
+                    <td th:text="${review.product.name}">Product</td>
+                    <td>
+                        <span th:each="i : ${#numbers.sequence(1, 5)}">
+                            <i th:classappend="${i <= review.rating} ? 'bi bi-star-fill text-warning' : 'bi bi-star text-muted'"></i>
+                        </span>
+                    </td>
+                    <td th:text="${#strings.abbreviate(review.comment, 50)}">Comment</td>
+                    <td th:text="${#temporals.format(review.createdAt, 'dd/MM/yyyy')}">Date</td>
+                    <td>
+                        <form th:action="@{/admin/reviews/delete/{id}(id=${review.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('Delete this review?')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

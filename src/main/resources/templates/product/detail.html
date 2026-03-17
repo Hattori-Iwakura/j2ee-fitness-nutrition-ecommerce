@@ -17,15 +17,41 @@
     <div class="row">
         <div class="col-md-5">
             <div class="card">
-                <div class="card-body text-center p-5 bg-light">
+                <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}" class="card-img-top" style="object-fit: cover;" alt="Product image">
+                <div th:if="${product.imageUrl == null}" class="card-body text-center p-5 bg-light">
                     <i class="bi bi-box-seam display-1 text-muted"></i>
                     <p class="mt-2 text-muted">Product Image</p>
                 </div>
             </div>
         </div>
         <div class="col-md-7">
-            <h1 th:text="${product.name}">Product Name</h1>
-            <p class="text-muted" th:text="'Brand: ' + ${product.brand}">Brand</p>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h1 th:text="${product.name}">Product Name</h1>
+                    <p class="text-muted" th:text="'Brand: ' + ${product.brand}">Brand</p>
+                </div>
+                <div sec:authorize="isAuthenticated()">
+                    <form th:if="${isWishlisted}" th:action="@{/wishlist/remove}" method="post">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="bi bi-heart-fill"></i> Wishlisted
+                        </button>
+                    </form>
+                    <form th:if="${!isWishlisted}" th:action="@{/wishlist/add}" method="post">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        <button type="submit" class="btn btn-outline-secondary">
+                            <i class="bi bi-heart"></i> Wishlist
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <!-- Rating summary -->
+            <div th:if="${avgRating != null}" class="mb-2">
+                <span th:each="i : ${#numbers.sequence(1, 5)}">
+                    <i th:classappend="${i <= avgRating} ? 'bi bi-star-fill text-warning' : 'bi bi-star text-muted'"></i>
+                </span>
+                <span class="ms-1 text-muted" th:text="${#numbers.formatDecimal(avgRating, 1, 1)} + ' (' + ${reviewCount} + ' reviews)'">4.5 (10 reviews)</span>
+            </div>
             <p th:text="${product.description}">Description</p>
 
             <hr>
@@ -68,6 +94,85 @@
                     <i class="bi bi-cart-plus"></i> Add to Cart
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- Recommendations Section -->
+    <div class="mt-5" th:if="${recommendedProducts != null and !recommendedProducts.isEmpty()}">
+        <h3><i class="bi bi-stars"></i> <span th:text="${recommendationTitle}">Recommended</span></h3>
+        <div class="row row-cols-1 row-cols-md-4 g-3 mt-2">
+            <div class="col" th:each="rec : ${recommendedProducts}">
+                <div class="card h-100">
+                    <img th:if="${rec.imageUrl != null}" th:src="${rec.imageUrl}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="Product image">
+                    <div th:if="${rec.imageUrl == null}" class="card-body text-center bg-light" style="height: 180px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-box-seam display-4 text-muted"></i>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">
+                            <a th:href="@{/products/{slug}(slug=${rec.slug})}" class="text-decoration-none" th:text="${rec.name}">Product</a>
+                        </h6>
+                        <small class="text-muted" th:text="${rec.brand}">Brand</small>
+                        <div class="mt-2" th:if="${!rec.variants.isEmpty()}">
+                            <strong class="text-primary" th:text="${#numbers.formatDecimal(rec.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="mt-5">
+        <h3><i class="bi bi-chat-left-text"></i> Reviews (<span th:text="${reviewCount}">0</span>)</h3>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Review Form -->
+        <div sec:authorize="isAuthenticated()" class="card mb-4" th:if="${canReview}">
+            <div class="card-header bg-dark text-white">Write a Review</div>
+            <div class="card-body">
+                <form th:action="@{/products/{slug}/reviews(slug=${product.slug})}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Rating</label>
+                        <div>
+                            <div class="form-check form-check-inline" th:each="i : ${#numbers.sequence(1, 5)}">
+                                <input class="form-check-input" type="radio" name="rating" th:id="'rating-' + ${i}" th:value="${i}" th:checked="${i == 5}">
+                                <label class="form-check-label" th:for="'rating-' + ${i}">
+                                    <span th:each="j : ${#numbers.sequence(1, i)}"><i class="bi bi-star-fill text-warning"></i></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Comment</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3" placeholder="Share your experience..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+        </div>
+        <div sec:authorize="isAuthenticated()" th:if="${hasReviewed}" class="alert alert-info mb-4">
+            <i class="bi bi-check-circle"></i> You have already reviewed this product.
+        </div>
+
+        <!-- Review List -->
+        <div th:if="${reviews.isEmpty()}" class="text-muted">No reviews yet. Be the first to review!</div>
+        <div th:each="review : ${reviews}" class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <strong th:text="${review.user.fullName}">User</strong>
+                        <span class="ms-2">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <i th:classappend="${i <= review.rating} ? 'bi bi-star-fill text-warning' : 'bi bi-star text-muted'"></i>
+                            </span>
+                        </span>
+                    </div>
+                    <small class="text-muted" th:text="${#temporals.format(review.createdAt, 'dd/MM/yyyy')}">Date</small>
+                </div>
+                <p class="mt-2 mb-0" th:if="${review.comment != null}" th:text="${review.comment}">Comment</p>
+            </div>
         </div>
     </div>
 </div>

@@ -9,7 +9,7 @@
         <h2 th:text="${category.id != null} ? 'Edit Category' : 'New Category'">Category Form</h2>
         <div class="card mt-3">
             <div class="card-body">
-                <form th:action="@{/admin/categories/save}" th:object="${category}" method="post">
+                <form th:action="@{/admin/categories/save}" th:object="${category}" method="post" enctype="multipart/form-data">
                     <input type="hidden" th:field="*{id}">
                     <div class="mb-3">
                         <label class="form-label">Name</label>
@@ -24,8 +24,13 @@
                         <textarea class="form-control" rows="3" th:field="*{description}"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Image URL</label>
-                        <input type="text" class="form-control" th:field="*{imageUrl}">
+                        <label class="form-label">Category Image</label>
+                        <input type="file" class="form-control" name="imageFile" accept="image/*">
+                        <div th:if="${category.imageUrl != null}" class="mt-2">
+                            <img th:src="${category.imageUrl}" alt="Current image" class="img-thumbnail" style="max-height: 150px;">
+                            <small class="d-block text-muted">Current image. Upload a new file to replace it.</small>
+                        </div>
+                        <input type="hidden" th:field="*{imageUrl}">
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" th:field="*{active}" id="active">

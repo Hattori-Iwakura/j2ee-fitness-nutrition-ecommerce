@@ -17,4 +17,9 @@ public class CheckoutRequest {
     private String address;
 
     private String note;
+
+    private String couponCode;
+
+    @NotBlank(message = "Payment method is required")
+    private String paymentMethod;
 }

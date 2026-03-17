@@ -4,6 +4,7 @@ import com.example.j2ee_fitness_nutrition_ecommerce.dto.RegisterRequest;
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.User;
 import com.example.j2ee_fitness_nutrition_ecommerce.enums.Role;
 import com.example.j2ee_fitness_nutrition_ecommerce.repository.UserRepository;
+import com.example.j2ee_fitness_nutrition_ecommerce.service.EmailService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @Override
@@ -30,7 +33,9 @@ public class UserServiceImpl implements UserService {
                 .phone(request.getPhone())
                 .role(Role.USER)
                 .build();
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        emailService.sendWelcomeEmail(savedUser);
+        return savedUser;
     }
 
     @Override

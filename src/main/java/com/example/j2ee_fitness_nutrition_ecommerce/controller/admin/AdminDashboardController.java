@@ -1,5 +1,6 @@
 package com.example.j2ee_fitness_nutrition_ecommerce.controller.admin;
 
+import com.example.j2ee_fitness_nutrition_ecommerce.enums.OrderStatus;
 import com.example.j2ee_fitness_nutrition_ecommerce.repository.OrderRepository;
 import com.example.j2ee_fitness_nutrition_ecommerce.repository.ProductRepository;
 import com.example.j2ee_fitness_nutrition_ecommerce.repository.UserRepository;
@@ -7,8 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.math.BigDecimal;
 
 @Controller
 @RequestMapping("/admin")
@@ -31,10 +30,9 @@ public class AdminDashboardController {
         model.addAttribute("totalOrders", orderRepository.count());
         model.addAttribute("totalProducts", productRepository.count());
         model.addAttribute("totalUsers", userRepository.count());
-        BigDecimal revenue = orderRepository.findAll().stream()
-                .map(o -> o.getTotalAmount())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        model.addAttribute("totalRevenue", revenue);
+        model.addAttribute("totalRevenue", orderRepository.sumTotalRevenue());
+        model.addAttribute("pendingOrders", orderRepository.countByStatus(OrderStatus.PENDING));
+        model.addAttribute("shippingOrders", orderRepository.countByStatus(OrderStatus.SHIPPING));
         return "admin/dashboard/index";
     }
 }

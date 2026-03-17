@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa;">
+
+<div style="background-color: #212529; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+    <h1 style="margin: 0;">FitShop</h1>
+    <p style="margin: 5px 0 0;">Order Confirmation</p>
+</div>
+
+<div style="background-color: white; padding: 30px; border-radius: 0 0 8px 8px; border: 1px solid #dee2e6;">
+    <h2 style="color: #0d6efd;">Thank you for your order!</h2>
+    <p>Hi <strong th:text="${order.fullName}">Customer</strong>,</p>
+    <p>Your order has been placed successfully. Here are the details:</p>
+
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 5px 0;"><strong>Order Code:</strong> <span th:text="${order.orderCode}">FS-XXXXXXXX</span></p>
+        <p style="margin: 5px 0;"><strong>Date:</strong> <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">Date</span></p>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <thead>
+            <tr style="background-color: #212529; color: white;">
+                <th style="padding: 10px; text-align: left;">Product</th>
+                <th style="padding: 10px; text-align: center;">Qty</th>
+                <th style="padding: 10px; text-align: right;">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="detail : ${order.orderDetails}" style="border-bottom: 1px solid #dee2e6;">
+                <td style="padding: 10px;">
+                    <span th:text="${detail.variant.product.name}">Product</span><br>
+                    <small style="color: #6c757d;" th:text="${detail.variant.flavor} + ' - ' + ${detail.variant.weight}">Variant</small>
+                </td>
+                <td style="padding: 10px; text-align: center;" th:text="${detail.quantity}">1</td>
+                <td style="padding: 10px; text-align: right;" th:text="${#numbers.formatDecimal(detail.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Amount</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${order.discountAmount != null and order.discountAmount.compareTo(T(java.math.BigDecimal).ZERO) > 0}" style="text-align: right; color: #198754;">
+        <p>Discount: -<span th:text="${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')}">0</span> VND</p>
+    </div>
+
+    <div style="text-align: right; font-size: 18px; font-weight: bold; color: #0d6efd; margin-top: 10px;">
+        Total: <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">Amount</span>
+    </div>
+
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 20px;">
+        <h3 style="margin-top: 0;">Shipping Address</h3>
+        <p style="margin: 5px 0;" th:text="${order.fullName}">Name</p>
+        <p style="margin: 5px 0;" th:text="${order.phone}">Phone</p>
+        <p style="margin: 5px 0;" th:text="${order.address}">Address</p>
+    </div>
+
+    <p style="color: #6c757d; margin-top: 20px; font-size: 14px;">
+        If you have any questions about your order, please don't hesitate to contact us.
+    </p>
+</div>
+
+<div style="text-align: center; padding: 20px; color: #6c757d; font-size: 12px;">
+    <p>&copy; 2026 FitShop - Fitness & Nutrition Supplements</p>
+</div>
+
+</body>
+</html>

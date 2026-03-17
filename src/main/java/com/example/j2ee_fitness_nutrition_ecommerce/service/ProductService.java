@@ -1,5 +1,6 @@
 package com.example.j2ee_fitness_nutrition_ecommerce.service;
 
+import com.example.j2ee_fitness_nutrition_ecommerce.dto.ProductFilter;
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,17 @@ public interface ProductService {
     Page<Product> searchByName(String keyword, Pageable pageable);
     Optional<Product> findById(Long id);
     Optional<Product> findBySlug(String slug);
+    Optional<Product> findActiveBySlug(String slug);
     List<Product> findAll();
     Product save(Product product);
     void deleteById(Long id);
+
+    // Advanced filtering
+    Page<Product> findWithFilter(ProductFilter filter, Pageable pageable);
+    List<String> findAllBrands();
+
+    // Recommendations
+    List<Product> findRelatedProducts(Long productId, Long categoryId);
+    List<Product> findCoPurchasedProducts(Long productId);
+    List<Product> findBestSellers(int limit);
 }

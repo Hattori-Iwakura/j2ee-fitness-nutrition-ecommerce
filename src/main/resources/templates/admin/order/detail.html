@@ -25,6 +25,10 @@
                         </tr>
                     </tbody>
                     <tfoot>
+                        <tr th:if="${order.discountAmount != null and order.discountAmount.compareTo(T(java.math.BigDecimal).ZERO) > 0}">
+                            <td colspan="4" class="text-end">Discount (<span th:text="${order.coupon?.code}">CODE</span>):</td>
+                            <td class="text-success" th:text="'-' + ${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">-50,000 VND</td>
+                        </tr>
                         <tr><td colspan="4" class="text-end fw-bold">Total:</td>
                             <td class="fw-bold text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">Total</td></tr>
                     </tfoot>
@@ -39,6 +43,27 @@
                         <li class="list-group-item"><strong>Address:</strong> <span th:text="${order.address}"></span></li>
                         <li class="list-group-item" th:if="${order.note}"><strong>Note:</strong> <span th:text="${order.note}"></span></li>
                     </ul>
+                </div>
+                <div class="card mb-3" th:if="${order.payment != null}">
+                    <div class="card-header bg-dark text-white">Payment Info</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Method:</strong> <span th:text="${order.payment.paymentMethod}">Method</span></li>
+                        <li class="list-group-item"><strong>Status:</strong>
+                            <span class="badge" th:classappend="${order.payment.paymentStatus.name() == 'COMPLETED'} ? 'bg-success' : (${order.payment.paymentStatus.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger')" th:text="${order.payment.paymentStatus}">Status</span>
+                        </li>
+                        <li class="list-group-item"><strong>Transaction:</strong> <span th:text="${order.payment.transactionCode}">Code</span></li>
+                        <li class="list-group-item" th:if="${order.payment.paidAt != null}"><strong>Paid at:</strong> <span th:text="${#temporals.format(order.payment.paidAt, 'dd/MM/yyyy HH:mm')}"></span></li>
+                    </ul>
+                    <div class="card-body" th:if="${order.payment.paymentStatus.name() == 'PENDING'}">
+                        <div class="d-flex gap-2">
+                            <form th:action="@{/admin/orders/{id}/payment/confirm(id=${order.id})}" method="post" class="flex-grow-1">
+                                <button type="submit" class="btn btn-success w-100 btn-sm">Confirm Payment</button>
+                            </form>
+                            <form th:action="@{/admin/orders/{id}/payment/fail(id=${order.id})}" method="post" class="flex-grow-1">
+                                <button type="submit" class="btn btn-danger w-100 btn-sm">Fail Payment</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
                 <div class="card">
                     <div class="card-header bg-dark text-white">Update Status</div>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa;">
+
+<div style="background-color: #212529; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+    <h1 style="margin: 0;">FitShop</h1>
+    <p style="margin: 5px 0 0;">Welcome!</p>
+</div>
+
+<div style="background-color: white; padding: 30px; border-radius: 0 0 8px 8px; border: 1px solid #dee2e6;">
+    <h2 style="color: #0d6efd;">Welcome to FitShop!</h2>
+    <p>Hi <strong th:text="${user.fullName}">User</strong>,</p>
+    <p>Thank you for creating an account with FitShop. We're excited to have you as part of our fitness community!</p>
+
+    <p>With your account, you can:</p>
+    <ul>
+        <li>Browse our wide range of fitness supplements</li>
+        <li>Save your favorite products to your wishlist</li>
+        <li>Track your orders</li>
+        <li>Leave reviews on products you've purchased</li>
+    </ul>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <p style="font-size: 16px;">Start shopping now and fuel your fitness journey!</p>
+    </div>
+
+    <p style="color: #6c757d; font-size: 14px;">
+        If you have any questions, don't hesitate to reach out to us.
+    </p>
+</div>
+
+<div style="text-align: center; padding: 20px; color: #6c757d; font-size: 12px;">
+    <p>&copy; 2026 FitShop - Fitness & Nutrition Supplements</p>
+</div>
+
+</body>
+</html>

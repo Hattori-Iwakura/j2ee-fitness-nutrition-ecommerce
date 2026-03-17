@@ -4,10 +4,12 @@ import com.example.j2ee_fitness_nutrition_ecommerce.entity.Product;
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.ProductVariant;
 import com.example.j2ee_fitness_nutrition_ecommerce.repository.ProductVariantRepository;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.CategoryService;
+import com.example.j2ee_fitness_nutrition_ecommerce.service.FileStorageService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -17,13 +19,16 @@ public class AdminProductController {
     private final ProductService productService;
     private final CategoryService categoryService;
     private final ProductVariantRepository variantRepository;
+    private final FileStorageService fileStorageService;
 
     public AdminProductController(ProductService productService,
                                    CategoryService categoryService,
-                                   ProductVariantRepository variantRepository) {
+                                   ProductVariantRepository variantRepository,
+                                   FileStorageService fileStorageService) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.variantRepository = variantRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping
@@ -42,10 +47,15 @@ public class AdminProductController {
     @PostMapping("/save")
     public String save(@ModelAttribute Product product,
                        @RequestParam Long categoryId,
+                       @RequestParam(required = false) MultipartFile imageFile,
                        RedirectAttributes redirectAttributes) {
         var category = categoryService.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
         product.setCategory(category);
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageUrl = fileStorageService.store(imageFile, "products");
+            product.setImageUrl(imageUrl);
+        }
         productService.save(product);
         redirectAttributes.addFlashAttribute("success", "Product saved successfully!");
         return "redirect:/admin/products";
@@ -63,7 +73,7 @@ public class AdminProductController {
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         productService.deleteById(id);
-        redirectAttributes.addFlashAttribute("success", "Product deleted!");
+        redirectAttributes.addFlashAttribute("success", "Product deactivated!");
         return "redirect:/admin/products";
     }
 
@@ -94,7 +104,10 @@ public class AdminProductController {
     public String deleteVariant(@PathVariable Long productId,
                                 @PathVariable Long variantId,
                                 RedirectAttributes redirectAttributes) {
-        variantRepository.deleteById(variantId);
+        var variant = variantRepository.findById(variantId)
+                .orElseThrow(() -> new IllegalArgumentException("Variant not found"));
+        variant.setActive(false);
+        variantRepository.save(variant);
         redirectAttributes.addFlashAttribute("success", "Variant deleted!");
         return "redirect:/admin/products/" + productId + "/variants";
     }

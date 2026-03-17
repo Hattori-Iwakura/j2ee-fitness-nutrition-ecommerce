@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Payment - FitShop')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="container mt-4">
+    <h2><i class="bi bi-credit-card"></i> Complete Payment</h2>
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <span th:if="${payment.paymentMethod.name() == 'BANK_TRANSFER'}">Bank Transfer Details</span>
+                    <span th:if="${payment.paymentMethod.name() == 'E_WALLET'}">E-Wallet Payment</span>
+                </div>
+                <div class="card-body">
+                    <!-- Bank Transfer -->
+                    <div th:if="${payment.paymentMethod.name() == 'BANK_TRANSFER'}">
+                        <div class="alert alert-info">
+                            <h5>Please transfer to the following account:</h5>
+                        </div>
+                        <table class="table table-bordered">
+                            <tr><td class="fw-bold">Bank</td><td>Vietcombank</td></tr>
+                            <tr><td class="fw-bold">Account Number</td><td>1234 5678 9012 3456</td></tr>
+                            <tr><td class="fw-bold">Account Name</td><td>FITSHOP CO., LTD</td></tr>
+                            <tr><td class="fw-bold">Amount</td><td class="text-primary fw-bold" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">Amount</td></tr>
+                            <tr><td class="fw-bold">Transfer Note</td><td th:text="${order.orderCode}">FS-XXXXXXXX</td></tr>
+                        </table>
+                    </div>
+
+                    <!-- E-Wallet -->
+                    <div th:if="${payment.paymentMethod.name() == 'E_WALLET'}">
+                        <div class="alert alert-info">
+                            <h5>Scan QR Code to pay via E-Wallet</h5>
+                        </div>
+                        <div class="text-center p-4">
+                            <div class="border rounded p-5 d-inline-block bg-light">
+                                <i class="bi bi-qr-code display-1"></i>
+                                <p class="mt-2 text-muted">Simulated QR Code</p>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <p>Amount: <strong class="text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">Amount</strong></p>
+                            <p>Reference: <strong th:text="${payment.transactionCode}">PAY-XXXXXXXX</strong></p>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <form th:action="@{/checkout/payment/confirm}" method="post">
+                        <input type="hidden" name="code" th:value="${order.orderCode}">
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="bi bi-check-circle"></i> I have completed the payment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header bg-dark text-white">Order Summary</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Order Code:</strong> <span th:text="${order.orderCode}">FS-XXXXXXXX</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Transaction:</strong> <span th:text="${payment.transactionCode}">PAY-XXXXXXXX</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between fs-5 bg-light">
+                        <strong>Total</strong>
+                        <strong class="text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">Total</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

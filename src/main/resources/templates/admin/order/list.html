@@ -8,12 +8,23 @@
     <div class="flex-grow-1 p-4">
         <h2>Orders</h2>
         <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
+
+        <!-- Status Filter -->
+        <div class="d-flex gap-2 mt-3 mb-3">
+            <a th:href="@{/admin/orders}" class="btn btn-sm"
+               th:classappend="${currentStatus == null} ? 'btn-dark' : 'btn-outline-dark'">All</a>
+            <a th:each="s : ${statuses}" th:href="@{/admin/orders(status=${s.name()})}"
+               class="btn btn-sm"
+               th:classappend="${currentStatus != null and currentStatus.name() == s.name()} ? 'btn-dark' : 'btn-outline-dark'"
+               th:text="${s}">Status</a>
+        </div>
+
         <table class="table table-hover mt-3">
             <thead class="table-dark">
                 <tr><th>Code</th><th>Customer</th><th>Phone</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr>
             </thead>
             <tbody>
-                <tr th:each="order : ${orders}">
+                <tr th:each="order : ${orders.content}">
                     <td th:text="${order.orderCode}">Code</td>
                     <td th:text="${order.fullName}">Name</td>
                     <td th:text="${order.phone}">Phone</td>
@@ -33,7 +44,23 @@
                 </tr>
             </tbody>
         </table>
-        <p th:if="${orders.isEmpty()}" class="text-muted text-center mt-4">No orders yet.</p>
+        <p th:if="${orders.content.isEmpty()}" class="text-muted text-center mt-4">No orders found.</p>
+
+        <!-- Pagination -->
+        <nav th:if="${orders.totalPages > 1}" aria-label="Order pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${orders.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/orders(page=${orders.number - 1}, status=${currentStatus != null ? currentStatus.name() : null})}">Previous</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, orders.totalPages - 1)}"
+                    th:classappend="${i == orders.number} ? 'active'">
+                    <a class="page-link" th:href="@{/admin/orders(page=${i}, status=${currentStatus != null ? currentStatus.name() : null})}" th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${orders.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/orders(page=${orders.number + 1}, status=${currentStatus != null ? currentStatus.name() : null})}">Next</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>
 <div th:replace="~{fragments/footer :: scripts}"></div>

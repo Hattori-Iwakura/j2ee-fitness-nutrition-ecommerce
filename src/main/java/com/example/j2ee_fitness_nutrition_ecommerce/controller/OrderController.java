@@ -27,9 +27,17 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public String orderDetail(@PathVariable Long id, Model model) {
+    public String orderDetail(@PathVariable Long id,
+                              @AuthenticationPrincipal UserDetails userDetails,
+                              Model model) {
         Order order = orderService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        // Verify the order belongs to the authenticated user
+        if (!order.getUser().getEmail().equals(userDetails.getUsername())) {
+            throw new org.springframework.security.access.AccessDeniedException("Access denied");
+        }
+
         model.addAttribute("order", order);
         return "order/detail";
     }

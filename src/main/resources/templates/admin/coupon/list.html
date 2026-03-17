@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Coupons - Admin')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="d-flex">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+    <div class="flex-grow-1 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Coupons</h2>
+            <a th:href="@{/admin/coupons/create}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> New Coupon
+            </a>
+        </div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Code</th>
+                    <th>Type</th>
+                    <th>Value</th>
+                    <th>Min Order</th>
+                    <th>Uses</th>
+                    <th>Period</th>
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="coupon : ${coupons}">
+                    <td class="fw-bold" th:text="${coupon.code}">CODE</td>
+                    <td th:text="${coupon.discountType}">Type</td>
+                    <td>
+                        <span th:if="${coupon.discountType.name() == 'PERCENTAGE'}" th:text="${coupon.discountValue} + '%'">10%</span>
+                        <span th:if="${coupon.discountType.name() == 'FIXED'}" th:text="${#numbers.formatDecimal(coupon.discountValue, 0, 'COMMA', 0, 'POINT')} + ' VND'">50,000 VND</span>
+                    </td>
+                    <td th:text="${coupon.minOrderAmount != null} ? ${#numbers.formatDecimal(coupon.minOrderAmount, 0, 'COMMA', 0, 'POINT')} + ' VND' : '-'">Min</td>
+                    <td th:text="${coupon.currentUses} + '/' + (${coupon.maxUses != null} ? ${coupon.maxUses} : '∞')">0/100</td>
+                    <td>
+                        <small th:if="${coupon.startDate != null}" th:text="${#temporals.format(coupon.startDate, 'dd/MM/yyyy')}"></small>
+                        <small th:if="${coupon.startDate != null and coupon.endDate != null}"> - </small>
+                        <small th:if="${coupon.endDate != null}" th:text="${#temporals.format(coupon.endDate, 'dd/MM/yyyy')}"></small>
+                        <small th:if="${coupon.startDate == null and coupon.endDate == null}">No limit</small>
+                    </td>
+                    <td>
+                        <span class="badge" th:classappend="${coupon.active} ? 'bg-success' : 'bg-secondary'"
+                              th:text="${coupon.active} ? 'Active' : 'Inactive'">Active</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/admin/coupons/edit/{id}(id=${coupon.id})}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form th:action="@{/admin/coupons/delete/{id}(id=${coupon.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('Delete this coupon?')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

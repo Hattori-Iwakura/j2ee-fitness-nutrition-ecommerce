@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(./mvnw compile:*)",
+      "Bash(./mvnw spring-boot:run -q)"
     ]
   }
 }

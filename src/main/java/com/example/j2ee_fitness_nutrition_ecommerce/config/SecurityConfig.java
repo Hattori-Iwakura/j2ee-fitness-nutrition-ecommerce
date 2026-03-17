@@ -26,9 +26,9 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/products", "/products/**", "/categories", "/categories/**", "/search", "/search/**").permitAll()
-                .requestMatchers("/register", "/login", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/register", "/login", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
                 .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
-                .requestMatchers("/cart", "/cart/**", "/checkout", "/checkout/**", "/orders", "/orders/**").authenticated()
+                .requestMatchers("/cart", "/cart/**", "/checkout", "/checkout/**", "/orders", "/orders/**", "/wishlist", "/wishlist/**").authenticated()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
