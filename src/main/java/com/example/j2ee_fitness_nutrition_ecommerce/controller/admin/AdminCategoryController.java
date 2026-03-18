@@ -1,5 +1,6 @@
 package com.example.j2ee_fitness_nutrition_ecommerce.controller.admin;
 
+import com.example.j2ee_fitness_nutrition_ecommerce.dto.CategoryRequest;
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.Category;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.CategoryService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.FileStorageService;
@@ -31,18 +32,39 @@ public class AdminCategoryController {
 
     @GetMapping("/create")
     public String createForm(Model model) {
-        model.addAttribute("category", new Category());
+        model.addAttribute("category", new CategoryRequest());
         return "admin/category/form";
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute Category category,
+    public String save(@Valid @ModelAttribute("category") CategoryRequest request,
+                       BindingResult result,
                        @RequestParam(required = false) MultipartFile imageFile,
                        RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "admin/category/form";
+        }
+
+        Category category;
+        if (request.getId() != null) {
+            category = categoryService.findById(request.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+        } else {
+            category = new Category();
+        }
+
+        category.setName(request.getName());
+        category.setSlug(request.getSlug());
+        category.setDescription(request.getDescription());
+        category.setActive(request.isActive());
+
         if (imageFile != null && !imageFile.isEmpty()) {
             String imageUrl = fileStorageService.store(imageFile, "categories");
             category.setImageUrl(imageUrl);
+        } else if (request.getImageUrl() != null) {
+            category.setImageUrl(request.getImageUrl());
         }
+
         categoryService.save(category);
         redirectAttributes.addFlashAttribute("success", "Category saved successfully!");
         return "redirect:/admin/categories";
@@ -52,7 +74,16 @@ public class AdminCategoryController {
     public String editForm(@PathVariable Long id, Model model) {
         Category category = categoryService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
-        model.addAttribute("category", category);
+
+        CategoryRequest request = new CategoryRequest();
+        request.setId(category.getId());
+        request.setName(category.getName());
+        request.setSlug(category.getSlug());
+        request.setDescription(category.getDescription());
+        request.setImageUrl(category.getImageUrl());
+        request.setActive(category.isActive());
+
+        model.addAttribute("category", request);
         return "admin/category/form";
     }
 

@@ -14,27 +14,32 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Code</label>
-                            <input type="text" class="form-control" th:field="*{code}" required style="text-transform: uppercase;">
+                            <input type="text" class="form-control" th:field="*{code}" th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'" required style="text-transform: uppercase;">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Discount Type</label>
-                            <select class="form-select" th:field="*{discountType}" required>
+                            <select class="form-select" th:field="*{discountType}" th:classappend="${#fields.hasErrors('discountType')} ? 'is-invalid'" required>
                                 <option th:each="type : ${discountTypes}" th:value="${type}" th:text="${type}">Type</option>
                             </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('discountType')}" th:errors="*{discountType}"></div>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Discount Value</label>
-                            <input type="number" class="form-control" th:field="*{discountValue}" step="0.01" required>
+                            <input type="number" class="form-control" th:field="*{discountValue}" th:classappend="${#fields.hasErrors('discountValue')} ? 'is-invalid'" step="0.01" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('discountValue')}" th:errors="*{discountValue}"></div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Min Order Amount (VND)</label>
-                            <input type="number" class="form-control" th:field="*{minOrderAmount}" step="0.01">
+                            <input type="number" class="form-control" th:field="*{minOrderAmount}" th:classappend="${#fields.hasErrors('minOrderAmount')} ? 'is-invalid'" step="0.01">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('minOrderAmount')}" th:errors="*{minOrderAmount}"></div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Max Uses</label>
-                            <input type="number" class="form-control" th:field="*{maxUses}">
+                            <input type="number" class="form-control" th:field="*{maxUses}" th:classappend="${#fields.hasErrors('maxUses')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('maxUses')}" th:errors="*{maxUses}"></div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Current Uses</label>

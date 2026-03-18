@@ -139,3 +139,7 @@ All core features working: product catalog with categories/search/pagination, pr
 **Test accounts**: admin@fitshop.com / admin123 (ADMIN), user@fitshop.com / user123 (USER)
 
 **Next step**: UI polish, error pages, and any refinements.
+
+## Workflow Rules
+
+- **Implementation reports**: After finishing any feature/task implementation, create a `.md` report file in the `docs/` folder documenting what was done (files changed, what was added, setup instructions, etc.).

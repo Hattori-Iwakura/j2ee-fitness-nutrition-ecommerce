@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long> {
     List<ProductVariant> findByProductIdAndActiveTrue(Long productId);
+
+    List<ProductVariant> findByActiveTrueAndStockLessThanEqualOrderByStockAsc(int threshold);
 }
