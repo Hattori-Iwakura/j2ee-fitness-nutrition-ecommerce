@@ -1,0 +1,409 @@
+/* FitShop — modern storefront UI (inspired by clean dev-product landings) */
+:root {
+  --fs-bg: #f4f4f5;
+  --fs-bg-elevated: #fafafa;
+  --fs-surface: #ffffff;
+  --fs-border: rgba(9, 9, 11, 0.08);
+  --fs-border-strong: rgba(9, 9, 11, 0.12);
+  --fs-text: #09090b;
+  --fs-muted: #71717a;
+  --fs-nav: #09090b;
+  --fs-accent: #0d9488;
+  --fs-accent-hover: #0f766e;
+  --fs-accent-2: #6366f1;
+  --fs-radius: 14px;
+  --fs-radius-sm: 10px;
+  --fs-font: "DM Sans", system-ui, -apple-system, sans-serif;
+  --fs-mono: "JetBrains Mono", ui-monospace, monospace;
+  --fs-shadow: 0 1px 2px rgba(9, 9, 11, 0.04), 0 4px 16px rgba(9, 9, 11, 0.06);
+  --fs-shadow-hover: 0 8px 30px rgba(9, 9, 11, 0.1);
+}
+
+body {
+  font-family: var(--fs-font);
+  background-color: var(--fs-bg);
+  color: var(--fs-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* —— Navbar —— */
+.fitshop-navbar {
+  background: var(--fs-nav) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+}
+
+.fitshop-navbar .navbar-brand {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-size: 1.15rem;
+  color: #fafafa !important;
+}
+
+.fitshop-navbar .navbar-brand .bi {
+  background: linear-gradient(135deg, #2dd4bf, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.fitshop-navbar .nav-link {
+  color: rgba(250, 250, 250, 0.78) !important;
+  font-weight: 500;
+  font-size: 0.925rem;
+  border-radius: 8px;
+  margin: 0 0.1rem;
+  padding: 0.45rem 0.65rem !important;
+  transition: color 0.15s, background 0.15s;
+}
+
+.fitshop-navbar .nav-link:hover,
+.fitshop-navbar .nav-link:focus {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.fitshop-navbar .nav-link.text-warning {
+  color: #fcd34d !important;
+}
+
+.fitshop-navbar .btn-link.nav-link {
+  color: rgba(250, 250, 250, 0.78) !important;
+  text-decoration: none;
+  border: none;
+}
+
+.fitshop-navbar .btn-link.nav-link:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* —— Buttons —— */
+.btn-primary {
+  --bs-btn-bg: var(--fs-accent);
+  --bs-btn-border-color: var(--fs-accent);
+  --bs-btn-hover-bg: var(--fs-accent-hover);
+  --bs-btn-hover-border-color: var(--fs-accent-hover);
+  --bs-btn-active-bg: var(--fs-accent-hover);
+  --bs-btn-active-border-color: var(--fs-accent-hover);
+  background-image: linear-gradient(135deg, #0d9488 0%, #4f46e5 100%);
+  border: none;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-image: linear-gradient(135deg, #0f766e 0%, #4338ca 100%);
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--fs-accent);
+  --bs-btn-border-color: rgba(13, 148, 136, 0.45);
+  --bs-btn-hover-bg: rgba(13, 148, 136, 0.1);
+  --bs-btn-hover-border-color: var(--fs-accent);
+  --bs-btn-active-bg: rgba(13, 148, 136, 0.18);
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.btn-lg {
+  border-radius: 12px;
+  padding: 0.65rem 1.5rem;
+}
+
+/* —— Cards —— */
+.fitshop-card {
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius);
+  box-shadow: var(--fs-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+}
+
+.fitshop-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--fs-shadow-hover);
+  border-color: var(--fs-border-strong);
+}
+
+.fitshop-card .card-img-top {
+  border-bottom: 1px solid var(--fs-border);
+}
+
+.fitshop-filter-card {
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-sm);
+  box-shadow: var(--fs-shadow);
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.fitshop-filter-card .card-header {
+  background: var(--fs-nav) !important;
+  color: #fafafa !important;
+  font-family: var(--fs-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.65rem 1rem;
+}
+
+.fitshop-filter-card .list-group-item.active {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.15), rgba(99, 102, 241, 0.12));
+  border-color: transparent;
+  color: var(--fs-text);
+  font-weight: 600;
+}
+
+/* —— Hero —— */
+.fitshop-hero {
+  position: relative;
+  border-radius: var(--fs-radius);
+  padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 4vw, 3rem);
+  margin-bottom: 3rem;
+  overflow: hidden;
+  background: var(--fs-nav);
+  color: #fafafa;
+  border: 1px solid var(--fs-border-strong);
+  box-shadow: var(--fs-shadow-hover);
+}
+
+.fitshop-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(45, 212, 191, 0.18), transparent 50%),
+    radial-gradient(ellipse 60% 50% at 85% 60%, rgba(167, 139, 250, 0.2), transparent 45%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.fitshop-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.fitshop-hero h1 {
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.fitshop-hero .lead {
+  color: rgba(250, 250, 250, 0.72);
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fitshop-eyebrow {
+  font-family: var(--fs-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #2dd4bf;
+  margin-bottom: 0.75rem;
+}
+
+.fitshop-section-title {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+}
+
+.fitshop-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.fitshop-pill {
+  font-family: var(--fs-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(250, 250, 250, 0.85);
+}
+
+/* —— Section spacing —— */
+.fitshop-page {
+  padding-top: 1.5rem;
+  padding-bottom: 3rem;
+}
+
+/* —— Auth panel —— */
+.fitshop-auth-panel {
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius);
+  box-shadow: var(--fs-shadow-hover);
+}
+
+.fitshop-auth-panel .card-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* —— Footer —— */
+.fitshop-footer {
+  background: var(--fs-nav);
+  color: rgba(250, 250, 250, 0.75);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 2.5rem 0 2rem;
+  margin-top: 4rem !important;
+}
+
+.fitshop-footer a {
+  color: rgba(250, 250, 250, 0.85);
+  text-decoration: none;
+}
+
+.fitshop-footer a:hover {
+  color: #2dd4bf;
+}
+
+.fitshop-footer .fs-mono-label {
+  font-family: var(--fs-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(250, 250, 250, 0.45);
+}
+
+/* —— Admin sidebar —— */
+.fitshop-admin-sidebar {
+  background: var(--fs-nav) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.fitshop-admin-sidebar .nav-link {
+  border-radius: 8px;
+  margin-bottom: 0.2rem;
+  color: rgba(250, 250, 250, 0.78) !important;
+  transition: background 0.15s, color 0.15s;
+}
+
+.fitshop-admin-sidebar .nav-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff !important;
+}
+
+.fitshop-stat-card {
+  border: none !important;
+  border-radius: var(--fs-radius) !important;
+  box-shadow: var(--fs-shadow);
+  overflow: hidden;
+}
+
+.fitshop-stat-card .card-title {
+  font-family: var(--fs-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.92;
+}
+
+.fitshop-admin-main {
+  background: var(--fs-bg);
+  min-height: calc(100vh - 56px);
+}
+
+/* —— Pagination —— */
+.pagination .page-link {
+  border-radius: 8px;
+  margin: 0 0.15rem;
+  border: 1px solid var(--fs-border);
+  color: var(--fs-text);
+}
+
+.pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, #0d9488, #4f46e5);
+  border-color: transparent;
+}
+
+/* —— Forms —— */
+.form-control,
+.form-select {
+  border-radius: 10px;
+  border-color: var(--fs-border-strong);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, 0.15);
+}
+
+/* —— Badges —— */
+.badge.bg-secondary {
+  background: rgba(9, 9, 11, 0.08) !important;
+  color: var(--fs-text);
+  font-weight: 500;
+  border: 1px solid var(--fs-border);
+}
+
+.text-primary {
+  color: var(--fs-accent) !important;
+}
+
+/* —— Product grid placeholder —— */
+.fitshop-placeholder-icon {
+  background: linear-gradient(180deg, var(--fs-bg-elevated), var(--fs-bg));
+  border-bottom: 1px solid var(--fs-border);
+}
+
+/* —— Breadcrumb —— */
+.breadcrumb {
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.breadcrumb-item a {
+  color: var(--fs-muted);
+  text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+  color: var(--fs-accent);
+}
+
+/* —— Tables (cart, etc.) —— */
+.table.fitshop-table thead {
+  background: var(--fs-nav);
+  color: #fafafa;
+}
+
+.table.fitshop-table thead th {
+  font-family: var(--fs-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border: none;
+  padding: 0.9rem 1rem;
+  vertical-align: middle;
+}
+
+.table.fitshop-table tbody td {
+  vertical-align: middle;
+  border-color: var(--fs-border);
+}

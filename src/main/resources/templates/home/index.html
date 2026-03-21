@@ -4,51 +4,62 @@
 <body>
 <nav th:replace="~{fragments/header :: navbar}"></nav>
 
-<div class="container mt-5">
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold">Welcome to FitShop</h1>
-        <p class="lead text-muted">Your one-stop shop for fitness & nutrition supplements</p>
-        <a th:href="@{/products}" class="btn btn-primary btn-lg mt-3">Browse Products</a>
-    </div>
+<div class="container fitshop-page">
+    <header class="fitshop-hero text-center">
+        <p class="fitshop-eyebrow mb-0">Fitness &amp; nutrition</p>
+        <h1 class="display-5 display-md-4 mt-2 mb-3">Năng lượng cho buổi tập — giao diện mới, trải nghiệm mượt</h1>
+        <p class="lead mx-auto">Whey, mass gainer, pre-workout và vitamin — chọn đúng mục tiêu, giao nhanh trong tay bạn.</p>
+        <a th:href="@{/products}" class="btn btn-primary btn-lg mt-2">Khám phá sản phẩm</a>
+        <div class="fitshop-pill-row">
+            <span class="fitshop-pill">Chính hãng</span>
+            <span class="fitshop-pill">Đủ vị &amp; khối lượng</span>
+            <span class="fitshop-pill">Giỏ hàng an toàn</span>
+        </div>
+    </header>
 
     <div class="row g-4" th:if="${categories != null and !categories.isEmpty()}">
-        <h2 class="text-center mb-3">Shop by Category</h2>
+        <div class="col-12 text-center mb-2">
+            <p class="fitshop-eyebrow" style="color: var(--fs-accent);">Danh mục</p>
+            <h2 class="fitshop-section-title mb-0">Chọn theo mục tiêu</h2>
+        </div>
         <div class="col-md-4" th:each="category : ${categories}">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100 fitshop-card border-0">
                 <img th:if="${category.imageUrl != null}" th:src="${category.imageUrl}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="Category image">
-                <div th:if="${category.imageUrl == null}" class="text-center p-4 bg-light">
+                <div th:if="${category.imageUrl == null}" class="text-center py-5 fitshop-placeholder-icon" style="height: 180px; display: flex; align-items: center; justify-content: center;">
                     <i class="bi bi-tags display-4 text-muted"></i>
                 </div>
-                <div class="card-body text-center">
-                    <h5 class="card-title" th:text="${category.name}">Category</h5>
-                    <p class="card-text text-muted" th:text="${category.description}">Description</p>
-                    <a th:href="@{/products(category=${category.slug})}" class="btn btn-outline-primary">View Products</a>
+                <div class="card-body text-center d-flex flex-column">
+                    <h5 class="card-title fw-bold" th:text="${category.name}">Category</h5>
+                    <p class="card-text text-muted small flex-grow-1" th:text="${category.description}">Description</p>
+                    <a th:href="@{/products(category=${category.slug})}" class="btn btn-outline-primary mt-2">Xem sản phẩm</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Best Sellers -->
-    <div class="mt-5" th:if="${bestSellers != null and !bestSellers.isEmpty()}">
-        <h2 class="text-center mb-3">Best Sellers</h2>
-        <div class="row row-cols-1 row-cols-md-4 g-3">
+    <div class="mt-5 pt-4" th:if="${bestSellers != null and !bestSellers.isEmpty()}">
+        <div class="col-12 text-center mb-4">
+            <p class="fitshop-eyebrow" style="color: var(--fs-accent);">Bán chạy</p>
+            <h2 class="fitshop-section-title mb-0">Best sellers</h2>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
             <div class="col" th:each="product : ${bestSellers}">
-                <div class="card h-100 shadow-sm">
+                <div class="card h-100 fitshop-card border-0">
                     <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="Product image">
-                    <div th:if="${product.imageUrl == null}" class="text-center p-4 bg-light" style="height: 180px; display: flex; align-items: center; justify-content: center;">
+                    <div th:if="${product.imageUrl == null}" class="text-center fitshop-placeholder-icon" style="height: 180px; display: flex; align-items: center; justify-content: center;">
                         <i class="bi bi-box-seam display-4 text-muted"></i>
                     </div>
-                    <div class="card-body">
-                        <h6 class="card-title">
-                            <a th:href="@{/products/{slug}(slug=${product.slug})}" class="text-decoration-none" th:text="${product.name}">Product</a>
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title fw-bold">
+                            <a th:href="@{/products/{slug}(slug=${product.slug})}" class="text-decoration-none text-dark" th:text="${product.name}">Product</a>
                         </h6>
                         <small class="text-muted" th:text="${product.brand}">Brand</small>
                         <div class="mt-2" th:if="${!product.variants.isEmpty()}">
-                            <strong class="text-primary" th:text="${#numbers.formatDecimal(product.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</strong>
+                            <span class="fw-bold text-primary" th:text="${#numbers.formatDecimal(product.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</span>
                         </div>
                     </div>
-                    <div class="card-footer bg-transparent text-center">
-                        <a th:href="@{/products/{slug}(slug=${product.slug})}" class="btn btn-outline-primary btn-sm">View Details</a>
+                    <div class="card-footer bg-transparent border-0 text-center pt-0 pb-3">
+                        <a th:href="@{/products/{slug}(slug=${product.slug})}" class="btn btn-outline-primary btn-sm w-100">Chi tiết</a>
                     </div>
                 </div>
             </div>

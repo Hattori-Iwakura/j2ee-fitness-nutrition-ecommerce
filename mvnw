@@ -147,7 +147,17 @@ MAVEN_HOME="${MAVEN_USER_HOME}/wrapper/dists/${distributionUrlNameMain-}/$(hash_
 
 exec_maven() {
   unset MVNW_VERBOSE MVNW_USERNAME MVNW_PASSWORD MVNW_REPOURL || :
-  exec "$MAVEN_HOME/bin/$MVN_CMD" "$@" || die "cannot exec $MAVEN_HOME/bin/$MVN_CMD"
+  if [ "$#" -eq 0 ]; then
+    exec "$MAVEN_HOME/bin/$MVN_CMD" package || die "cannot exec $MAVEN_HOME/bin/$MVN_CMD"
+  elif [ "$#" -eq 1 ]; then
+    case "$1" in
+      -v | -V | -h | --help | --version) exec "$MAVEN_HOME/bin/$MVN_CMD" "$@" || die "cannot exec $MAVEN_HOME/bin/$MVN_CMD" ;;
+      -*) exec "$MAVEN_HOME/bin/$MVN_CMD" "$@" package || die "cannot exec $MAVEN_HOME/bin/$MVN_CMD" ;;
+      *) exec "$MAVEN_HOME/bin/$MVN_CMD" "$@" || die "cannot exec $MAVEN_HOME/bin/$MVN_CMD" ;;
+    esac
+  else
+    exec "$MAVEN_HOME/bin/$MVN_CMD" "$@" || die "cannot exec $MAVEN_HOME/bin/$MVN_CMD"
+  fi
 }
 
 if [ -d "$MAVEN_HOME" ]; then

@@ -34,3 +34,6 @@ build/
 
 ### Docs (internal dev notes) ###
 docs/
+
+### Local env (secrets) ###
+.env
