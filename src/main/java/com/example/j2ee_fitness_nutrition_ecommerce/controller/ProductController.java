@@ -6,6 +6,7 @@ import com.example.j2ee_fitness_nutrition_ecommerce.service.CategoryService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.ProductService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.ReviewService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.WishlistService;
+import com.example.j2ee_fitness_nutrition_ecommerce.util.PaginationHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -46,6 +47,7 @@ public class ProductController {
         Page<Product> products = productService.findWithFilter(filter, pageable);
 
         model.addAttribute("products", products);
+        model.addAttribute("paginationItems", PaginationHelper.buildAdaptive(products.getNumber(), products.getTotalPages()));
         model.addAttribute("filter", filter);
         model.addAttribute("categories", categoryService.findAllActive());
         model.addAttribute("allBrands", productService.findAllBrands());

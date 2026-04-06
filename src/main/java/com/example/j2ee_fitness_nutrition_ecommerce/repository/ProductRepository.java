@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
+    long countByCategory_Id(Long categoryId);
+
     Page<Product> findByActiveTrue(Pageable pageable);
     Page<Product> findByCategoryIdAndActiveTrue(Long categoryId, Pageable pageable);
     Page<Product> findByNameContainingIgnoreCaseAndActiveTrue(String keyword, Pageable pageable);
@@ -48,4 +50,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
         )
         """)
     List<Product> findBestSellers(Pageable pageable);
+
+    /** Newest active products (for home “featured / new arrivals”). */
+    List<Product> findByActiveTrueOrderByCreatedAtDesc(Pageable pageable);
 }

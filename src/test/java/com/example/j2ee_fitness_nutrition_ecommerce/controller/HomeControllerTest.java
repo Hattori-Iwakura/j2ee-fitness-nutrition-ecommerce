@@ -33,11 +33,13 @@ class HomeControllerTest {
         Category cat = Category.builder().id(1L).name("Protein").active(true).build();
         when(categoryRepository.findByActiveTrue()).thenReturn(List.of(cat));
         when(productService.findBestSellers(anyInt())).thenReturn(List.of());
+        when(productService.findNewArrivals(anyInt())).thenReturn(List.of());
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("home/index"))
                 .andExpect(model().attributeExists("categories"))
+                .andExpect(model().attributeExists("featuredProducts"))
                 .andExpect(model().attributeExists("bestSellers"));
     }
 }

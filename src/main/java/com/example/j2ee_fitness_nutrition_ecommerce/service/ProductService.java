@@ -27,4 +27,7 @@ public interface ProductService {
     List<Product> findRelatedProducts(Long productId, Long categoryId);
     List<Product> findCoPurchasedProducts(Long productId);
     List<Product> findBestSellers(int limit);
+
+    /** Recently added products (shown as “featured” on home). */
+    List<Product> findNewArrivals(int limit);
 }

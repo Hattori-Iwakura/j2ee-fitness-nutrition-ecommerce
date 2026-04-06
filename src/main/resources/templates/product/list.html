@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/header :: head('Products - FitShop')}"></head>
-<body>
+<body class="fitshop-edge-decor">
+<th:block th:replace="~{fragments/edge-decor :: edgeDecor}"></th:block>
 <nav th:replace="~{fragments/header :: navbar}"></nav>
 
-<div class="container fitshop-page">
+<div class="container fitshop-page fitshop-edge-layer">
     <div class="row">
         <!-- Sidebar: Filters -->
-        <div class="col-md-3">
+        <div class="col-md-3 fitshop-filter-sidebar">
             <form th:action="@{/products}" method="get" id="filterForm">
                 <!-- Categories -->
                 <div class="fitshop-filter-card">
                     <div class="card-header">Categories</div>
-                    <div class="list-group list-group-flush">
+                    <div class="list-group list-group-flush fitshop-filter-list">
                         <a th:href="@{/products}" class="list-group-item list-group-item-action"
                            th:classappend="${filter.category == null or filter.category.isBlank()} ? 'active'">All Products</a>
                         <a th:each="cat : ${categories}"
@@ -30,9 +31,9 @@
                 <div class="fitshop-filter-card">
                     <div class="card-header">Search</div>
                     <div class="card-body">
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="keyword" th:value="${filter.keyword}" placeholder="Search products...">
-                            <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                        <div class="input-group fitshop-filter-input-group">
+                            <input type="text" class="form-control" name="keyword" th:value="${filter.keyword}" placeholder="Search products..." autocomplete="off">
+                            <button class="btn btn-primary fitshop-filter-search-btn" type="submit" aria-label="Search"><i class="bi bi-search"></i></button>
                         </div>
                     </div>
                 </div>
@@ -41,13 +42,15 @@
                 <div class="fitshop-filter-card">
                     <div class="card-header">Price Range</div>
                     <div class="card-body">
-                        <div class="row g-2">
+                        <div class="row g-2 fitshop-filter-price-row">
                             <div class="col-6">
-                                <input type="number" class="form-control form-control-sm" name="minPrice"
+                                <label class="visually-hidden" for="filterMinPrice">Min price</label>
+                                <input type="number" class="form-control fitshop-filter-num" id="filterMinPrice" name="minPrice"
                                        th:value="${filter.minPrice}" placeholder="Min" min="0">
                             </div>
                             <div class="col-6">
-                                <input type="number" class="form-control form-control-sm" name="maxPrice"
+                                <label class="visually-hidden" for="filterMaxPrice">Max price</label>
+                                <input type="number" class="form-control fitshop-filter-num" id="filterMaxPrice" name="maxPrice"
                                        th:value="${filter.maxPrice}" placeholder="Max" min="0">
                             </div>
                         </div>
@@ -57,8 +60,8 @@
                 <!-- Brand Filter -->
                 <div class="fitshop-filter-card" th:if="${allBrands != null and !allBrands.isEmpty()}">
                     <div class="card-header">Brand</div>
-                    <div class="card-body" style="max-height: 200px; overflow-y: auto;">
-                        <div class="form-check" th:each="brand : ${allBrands}">
+                    <div class="card-body fitshop-filter-brand-scroll">
+                        <div class="form-check fitshop-filter-check" th:each="brand : ${allBrands}">
                             <input class="form-check-input" type="checkbox" name="brands"
                                    th:value="${brand}" th:id="'brand-' + ${brand}"
                                    th:checked="${filter.brands != null and filter.brands.contains(brand)}">
@@ -70,7 +73,7 @@
                 <!-- In Stock Only -->
                 <div class="fitshop-filter-card">
                     <div class="card-body">
-                        <div class="form-check form-switch">
+                        <div class="form-check form-switch fitshop-filter-switch mb-0">
                             <input class="form-check-input" type="checkbox" name="inStockOnly"
                                    id="inStockOnly" value="true" th:checked="${filter.inStockOnly}">
                             <label class="form-check-label" for="inStockOnly">In Stock Only</label>
@@ -79,7 +82,7 @@
                 </div>
 
                 <!-- Apply / Clear Filters -->
-                <div class="d-grid gap-2">
+                <div class="d-grid gap-2 fitshop-filter-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-funnel"></i> Apply Filters
                     </button>
@@ -92,7 +95,13 @@
 
         <!-- Product Grid -->
         <div class="col-md-9">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+            <div class="fitshop-masthead">
+                <div class="fitshop-masthead__inner">
+                    <h2 class="fitshop-masthead__title">Cửa hàng</h2>
+                    <p class="fitshop-masthead__sub">Lọc theo danh mục, giá và thương hiệu — thẻ sản phẩm có viền gradient và đổ bóng mới để dễ nhìn trên nền trang.</p>
+                </div>
+            </div>
+            <div class="fitshop-toolbar d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <div>
                     <p class="fitshop-eyebrow mb-1" style="color: var(--fs-accent);">Catalog</p>
                     <h2 class="fitshop-section-title mb-1" th:if="${currentCategory != null}" th:text="${currentCategory.name}">Products</h2>
@@ -101,10 +110,9 @@
                     <small class="text-muted" th:text="${products.totalElements} + ' product(s) found'">N products found</small>
                 </div>
 
-                <!-- Sort Dropdown -->
                 <div class="d-flex align-items-center gap-2">
-                    <label for="sortSelect" class="form-label mb-0 text-nowrap">Sort by:</label>
-                    <select class="form-select form-select-sm" id="sortSelect" style="width: auto;"
+                    <label for="sortSelect" class="form-label mb-0 text-nowrap small text-muted">Sort by</label>
+                    <select class="form-select form-select-sm" id="sortSelect"
                             onchange="applySort(this.value)">
                         <option value="newest" th:selected="${filter.sort == null or filter.sort == 'newest'}">Newest</option>
                         <option value="price-asc" th:selected="${filter.sort == 'price-asc'}">Price: Low to High</option>
@@ -115,20 +123,18 @@
                 </div>
             </div>
 
-            <!-- Active Filters Tags -->
-            <div class="mb-3" th:if="${(filter.brands != null and !filter.brands.isEmpty()) or filter.minPrice != null or filter.maxPrice != null or filter.inStockOnly}">
-                <span class="badge bg-secondary me-1" th:each="b : ${filter.brands}" th:text="'Brand: ' + ${b}">Brand</span>
-                <span class="badge bg-secondary me-1" th:if="${filter.minPrice != null}" th:text="'Min: ' + ${#numbers.formatDecimal(filter.minPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">Min</span>
-                <span class="badge bg-secondary me-1" th:if="${filter.maxPrice != null}" th:text="'Max: ' + ${#numbers.formatDecimal(filter.maxPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">Max</span>
-                <span class="badge bg-success me-1" th:if="${filter.inStockOnly}">In Stock</span>
-                <a th:href="@{/products(category=${filter.category})}" class="badge bg-danger text-decoration-none">Clear filters</a>
+            <div class="fitshop-filter-chips mb-3" th:if="${(filter.brands != null and !filter.brands.isEmpty()) or filter.minPrice != null or filter.maxPrice != null or filter.inStockOnly}">
+                <span class="badge bg-secondary me-1 mb-1" th:each="b : ${filter.brands}" th:text="'Brand: ' + ${b}">Brand</span>
+                <span class="badge bg-secondary me-1 mb-1" th:if="${filter.minPrice != null}" th:text="'Min: ' + ${#numbers.formatDecimal(filter.minPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">Min</span>
+                <span class="badge bg-secondary me-1 mb-1" th:if="${filter.maxPrice != null}" th:text="'Max: ' + ${#numbers.formatDecimal(filter.maxPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">Max</span>
+                <span class="badge bg-success me-1 mb-1" th:if="${filter.inStockOnly}">In Stock</span>
+                <a th:href="@{/products(category=${filter.category})}" class="badge bg-danger text-decoration-none mb-1">Clear filters</a>
             </div>
 
-            <div class="row g-4" th:if="${!products.isEmpty()}">
-                <div class="col-md-4" th:each="product : ${products}">
+            <div class="row g-3 g-lg-4" th:if="${!products.isEmpty()}">
+                <div class="col-6 col-xl-4" th:each="product : ${products}">
                     <div class="card h-100 fitshop-card border-0 position-relative">
-                        <!-- Wishlist heart -->
-                        <div sec:authorize="isAuthenticated()" class="position-absolute top-0 end-0 m-2" style="z-index: 1;">
+                        <div sec:authorize="isAuthenticated()" class="position-absolute top-0 end-0 m-2 fitshop-wishlist-hit">
                             <form th:if="${wishlistedIds != null and wishlistedIds.contains(product.id)}" th:action="@{/wishlist/remove}" method="post">
                                 <input type="hidden" name="productId" th:value="${product.id}">
                                 <button type="submit" class="btn btn-sm btn-light rounded-circle shadow-sm" title="Remove from wishlist">
@@ -142,16 +148,20 @@
                                 </button>
                             </form>
                         </div>
-                        <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Product image">
-                        <div th:if="${product.imageUrl == null}" class="text-center p-4 fitshop-placeholder-icon" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-box-seam display-4 text-muted"></i>
+                        <div class="fitshop-media fitshop-media--1x1">
+                            <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}" th:alt="${product.name}" loading="lazy">
+                            <div th:if="${product.imageUrl == null}" class="fitshop-placeholder-icon">
+                                <i class="bi bi-box-seam display-4 text-muted"></i>
+                            </div>
                         </div>
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title" th:text="${product.name}">Product Name</h5>
-                            <p class="text-muted small" th:text="${product.brand}">Brand</p>
-                            <p class="card-text flex-grow-1" th:text="${#strings.abbreviate(product.description, 100)}">Description</p>
+                        <div class="card-body d-flex flex-column px-3 pt-3 pb-2">
+                            <h3 class="h6 card-title mb-1">
+                                <a th:href="@{/products/{slug}(slug=${product.slug})}" class="fitshop-product-title-link" th:text="${product.name}">Product Name</a>
+                            </h3>
+                            <p class="text-muted small mb-2" th:text="${product.brand}">Brand</p>
+                            <p class="card-text small text-muted flex-grow-1 mb-3 lh-sm" th:text="${#strings.abbreviate(product.description, 90)}">Description</p>
                             <div class="mt-auto">
-                                <p class="fw-bold text-primary" th:if="${!product.variants.isEmpty()}"
+                                <p class="fitshop-price-display fs-6 mb-2" th:if="${!product.variants.isEmpty()}"
                                    th:text="'From ' + ${#numbers.formatDecimal(product.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</p>
                                 <a th:href="@{/products/{slug}(slug=${product.slug})}" class="btn btn-outline-primary w-100">View Details</a>
                             </div>
@@ -159,24 +169,32 @@
                     </div>
                 </div>
             </div>
-            <div th:if="${products.isEmpty()}" class="text-center py-5">
+            <div th:if="${products.isEmpty()}" class="fitshop-empty-state text-center">
                 <i class="bi bi-search display-4 text-muted"></i>
-                <p class="text-muted fs-5 mt-3">No products match your filters.</p>
-                <a th:href="@{/products}" class="btn btn-outline-primary">Clear all filters</a>
+                <p class="text-muted fs-5 mt-3 mb-0">No products match your filters.</p>
+                <a th:href="@{/products}" class="btn btn-outline-primary mt-3">Clear all filters</a>
             </div>
 
-            <!-- Pagination -->
-            <nav th:if="${products.totalPages > 1}" class="mt-4">
-                <ul class="pagination justify-content-center">
+            <!-- Pagination: compact window + ellipses -->
+            <nav th:if="${products.totalPages > 1}" class="mt-4 fitshop-pagination-wrap" aria-label="Product pages">
+                <ul class="pagination fitshop-pagination justify-content-center mb-0">
                     <li class="page-item" th:classappend="${products.first} ? 'disabled'">
-                        <a class="page-link page-nav" href="#" th:data-page="${products.number - 1}">Previous</a>
+                        <a class="page-link page-nav fitshop-pagination-nav" href="#" th:data-page="${products.number - 1}">Previous</a>
                     </li>
-                    <li class="page-item" th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}"
-                        th:classappend="${i == products.number} ? 'active'">
-                        <a class="page-link page-nav" href="#" th:data-page="${i}" th:text="${i + 1}">1</a>
-                    </li>
+                    <th:block th:each="item : ${paginationItems}">
+                        <li th:if="${item.ellipsis}" class="page-item disabled fitshop-pagination-ellipsis" aria-hidden="true">
+                            <span class="page-link">…</span>
+                        </li>
+                        <li th:if="${!item.ellipsis}"
+                            class="page-item"
+                            th:classappend="${item.pageIndex == products.number} ? 'active'">
+                            <a class="page-link page-nav" href="#"
+                               th:data-page="${item.pageIndex}"
+                               th:text="${item.pageIndex + 1}">1</a>
+                        </li>
+                    </th:block>
                     <li class="page-item" th:classappend="${products.last} ? 'disabled'">
-                        <a class="page-link page-nav" href="#" th:data-page="${products.number + 1}">Next</a>
+                        <a class="page-link page-nav fitshop-pagination-nav" href="#" th:data-page="${products.number + 1}">Next</a>
                     </li>
                 </ul>
             </nav>
