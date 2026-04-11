@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="chatWidget (productName)">
+    <div id="fitshop-chat-root"
+         class="fitshop-chat-root"
+         th:data-product-name="${productName}">
+        <button type="button"
+                class="fitshop-chat-launcher btn"
+                id="fitshop-chat-launcher"
+                aria-controls="fitshop-chat-panel"
+                aria-expanded="false"
+                title="Mở trợ lý FitShop">
+            <span class="fitshop-chat-launcher__pulse" aria-hidden="true"></span>
+            <i class="bi bi-chat-dots-fill" aria-hidden="true"></i>
+            <span class="visually-hidden">Trợ lý FitShop</span>
+        </button>
+
+        <div class="fitshop-chat-panel"
+             id="fitshop-chat-panel"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="fitshop-chat-title"
+             hidden>
+            <div class="fitshop-chat-panel__head">
+                <div class="fitshop-chat-panel__brand">
+                    <span class="fitshop-chat-panel__avatar" aria-hidden="true"><i class="bi bi-lightning-charge-fill"></i></span>
+                    <div>
+                        <div id="fitshop-chat-title" class="fitshop-chat-panel__title">Trợ lý FitShop</div>
+                        <div class="fitshop-chat-panel__status"><span class="fitshop-chat-dot"></span> Giao diện demo — phản hồi mẫu</div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm fitshop-chat-close" id="fitshop-chat-close" aria-label="Đóng chat">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="fitshop-chat-panel__body">
+                <div class="fitshop-chat-quick" id="fitshop-chat-quick" role="group" aria-label="Gợi ý nhanh">
+                    <button type="button" class="fitshop-chat-chip" data-prompt="Giao hàng mất bao lâu?">Giao hàng</button>
+                    <button type="button" class="fitshop-chat-chip" data-prompt="Làm sao chọn whey phù hợp?">Chọn whey</button>
+                    <button type="button" class="fitshop-chat-chip" data-prompt="Có đổi trả không?">Đổi trả</button>
+                    <button type="button" class="fitshop-chat-chip" data-prompt="Liên hệ hotline">Hotline</button>
+                </div>
+                <div class="fitshop-chat-messages" id="fitshop-chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+            </div>
+            <form class="fitshop-chat-panel__foot" id="fitshop-chat-form" autocomplete="off">
+                <label for="fitshop-chat-input" class="visually-hidden">Nhập tin nhắn</label>
+                <input type="text" class="form-control fitshop-chat-input" id="fitshop-chat-input" maxlength="500" placeholder="Hỏi nhanh về sản phẩm hoặc đơn hàng…">
+                <button type="submit" class="btn btn-primary fitshop-chat-send" aria-label="Gửi">
+                    <i class="bi bi-send-fill" aria-hidden="true"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    <script th:src="@{/js/fitshop-chat-widget.js(v=20260411)}"></script>
+</th:block>
+</body>
+</html>

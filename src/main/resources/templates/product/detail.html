@@ -6,107 +6,128 @@
 <nav th:replace="~{fragments/header :: navbar}"></nav>
 
 <div class="container fitshop-page fitshop-edge-layer">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
-            <li class="breadcrumb-item"><a th:href="@{/products}">Products</a></li>
-            <li class="breadcrumb-item"><a th:href="@{/products(category=${product.category.slug})}" th:text="${product.category.name}">Category</a></li>
-            <li class="breadcrumb-item active" aria-current="page" th:text="${product.name}">Product</li>
+    <nav class="fitshop-detail-breadcrumb mb-3" aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/products}">Sản phẩm</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/products(category=${product.category.slug})}" th:text="${product.category.name}">Danh mục</a></li>
+            <li class="breadcrumb-item active text-truncate" aria-current="page" th:text="${product.name}">Sản phẩm</li>
         </ol>
     </nav>
 
-    <div class="fitshop-product-spotlight mb-4">
-        <span class="fitshop-product-spotlight__tag" th:text="${product.category.name}">Category</span>
-        <span class="fitshop-product-spotlight__name" th:text="${product.name}">Product</span>
-    </div>
+    <header class="fitshop-masthead fitshop-detail-masthead mb-4">
+        <div class="fitshop-masthead__inner d-flex flex-wrap justify-content-between align-items-start gap-3">
+            <div class="flex-grow-1 min-w-0">
+                <p class="fitshop-eyebrow mb-2" style="color: #5eead4;">
+                    <a class="link-light link-underline-opacity-25 link-underline-opacity-100-hover"
+                       th:href="@{/products(category=${product.category.slug})}" th:text="${product.category.name}">Danh mục</a>
+                    <span class="text-white-50 mx-2">·</span>
+                    <span class="text-white-50" th:text="${product.brand}">Thương hiệu</span>
+                </p>
+                <h1 class="fitshop-masthead__title text-break" th:text="${product.name}">Tên sản phẩm</h1>
+                <div class="fitshop-detail-rating-pill mt-2" th:if="${avgRating != null}">
+                    <span th:each="i : ${#numbers.sequence(1, 5)}">
+                        <i th:classappend="${i <= avgRating} ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+                    </span>
+                    <span class="fitshop-detail-rating-pill__text"
+                          th:text="${#numbers.formatDecimal(avgRating, 1, 1)} + ' · ' + ${reviewCount} + ' đánh giá'">4.5 · 10 đánh giá</span>
+                </div>
+                <p class="fitshop-masthead__sub mb-0 mt-2" th:if="${avgRating == null}">
+                    Chọn hương vị và khối lượng phù hợp — giá và tồn kho cập nhật theo từng phiên bản.
+                </p>
+            </div>
+            <div sec:authorize="isAuthenticated()" class="flex-shrink-0 d-flex gap-2">
+                <form th:if="${isWishlisted}" th:action="@{/wishlist/remove}" method="post" class="d-inline">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+                    <button type="submit" class="btn btn-outline-light btn-sm border-opacity-25">
+                        <i class="bi bi-heart-fill text-danger"></i> Đã lưu
+                    </button>
+                </form>
+                <form th:if="${!isWishlisted}" th:action="@{/wishlist/add}" method="post" class="d-inline">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+                    <button type="submit" class="btn btn-outline-light btn-sm border-opacity-25">
+                        <i class="bi bi-heart"></i> Yêu thích
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
 
     <div class="row g-4 g-lg-5 align-items-start">
         <div class="col-md-6 col-lg-5 fitshop-detail-gallery">
-            <div class="card fitshop-card border-0 h-100">
+            <div class="card fitshop-card fitshop-card--detail-gallery border-0 h-100">
                 <div class="fitshop-media fitshop-media--1x1">
                     <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}" th:alt="${product.name}">
                     <div th:if="${product.imageUrl == null}" class="fitshop-placeholder-icon flex-column gap-2">
                         <i class="bi bi-box-seam display-1 text-muted"></i>
-                        <span class="text-muted small">No image</span>
+                        <span class="text-muted small">Chưa có ảnh</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-lg-7">
-            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-2">
-                <div>
-                    <p class="fitshop-eyebrow mb-1" style="color: var(--fs-accent);" th:text="${product.category.name}">Category</p>
-                    <h1 class="fitshop-section-title mb-2" th:text="${product.name}">Product Name</h1>
-                    <p class="text-muted mb-0" th:text="'Brand: ' + ${product.brand}">Brand</p>
-                </div>
-                <div sec:authorize="isAuthenticated()" class="flex-shrink-0">
-                    <form th:if="${isWishlisted}" th:action="@{/wishlist/remove}" method="post" class="d-inline">
-                        <input type="hidden" name="productId" th:value="${product.id}">
-                        <button type="submit" class="btn btn-outline-danger btn-sm">
-                            <i class="bi bi-heart-fill"></i> Saved
-                        </button>
-                    </form>
-                    <form th:if="${!isWishlisted}" th:action="@{/wishlist/add}" method="post" class="d-inline">
-                        <input type="hidden" name="productId" th:value="${product.id}">
-                        <button type="submit" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-heart"></i> Wishlist
-                        </button>
-                    </form>
+            <div class="fitshop-detail-desc card border-0 fitshop-detail-desc-card mb-4">
+                <div class="card-body p-4 p-lg-4">
+                    <h2 class="h6 fitshop-detail-side-title mb-3">Mô tả</h2>
+                    <p class="lh-lg text-secondary mb-0" th:text="${product.description}">Mô tả sản phẩm</p>
                 </div>
             </div>
-            <div th:if="${avgRating != null}" class="mb-3">
-                <span th:each="i : ${#numbers.sequence(1, 5)}">
-                    <i th:classappend="${i <= avgRating} ? 'bi bi-star-fill text-warning' : 'bi bi-star text-muted'"></i>
-                </span>
-                <span class="ms-1 text-muted small" th:text="${#numbers.formatDecimal(avgRating, 1, 1)} + ' · ' + ${reviewCount} + ' reviews'">4.5 · 10 reviews</span>
-            </div>
-            <p class="lh-lg text-secondary mb-4" style="max-width: 40rem;" th:text="${product.description}">Description</p>
 
-            <h2 class="h6 text-uppercase fitshop-eyebrow mb-3" style="color: var(--fs-muted); letter-spacing: 0.1em;">Chọn phiên bản</h2>
-            <form id="fitshop-product-cart-form" th:action="@{/cart/add}" method="post">
-                <div class="mb-4" role="radiogroup" aria-label="Product variants">
-                    <div th:each="variant, iter : ${product.variants}"
-                         class="form-check fitshop-variant-option"
-                         th:classappend="${!variant.active or variant.stock <= 0} ? 'fitshop-variant-option--disabled bg-light text-muted'">
-                        <div class="d-flex gap-3 align-items-start">
-                            <input class="form-check-input flex-shrink-0" type="radio" name="variantId"
-                                   th:id="'variant-' + ${variant.id}"
-                                   th:value="${variant.id}"
-                                   th:checked="${iter.index == 0}"
-                                   th:disabled="${!variant.active or variant.stock <= 0}">
-                            <label class="form-check-label w-100 ps-0" th:for="'variant-' + ${variant.id}">
-                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                                    <span>
-                                        <strong th:text="${variant.flavor}">Flavor</strong>
-                                        <span class="text-muted"> · </span>
-                                        <span th:text="${variant.weight}">Weight</span>
-                                    </span>
-                                    <span class="text-md-end">
-                                        <span class="fitshop-price-display fs-6" th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</span>
-                                        <br>
-                                        <small class="text-success" th:if="${variant.stock > 0}" th:text="${variant.stock} + ' in stock'"></small>
-                                        <small class="text-danger" th:if="${variant.stock <= 0}">Out of stock</small>
-                                    </span>
+            <div class="fitshop-detail-buy-card">
+                <div class="fitshop-detail-buy-card__head">
+                    <span class="fitshop-detail-buy-card__label"><i class="bi bi-sliders me-1"></i> Chọn phiên bản</span>
+                    <span class="fitshop-detail-buy-card__hint text-muted small">Giá theo vị / khối lượng</span>
+                </div>
+                <div class="fitshop-detail-buy-card__body">
+                    <form id="fitshop-product-cart-form" th:action="@{/cart/add}" method="post">
+                        <div class="mb-4" role="radiogroup" aria-label="Phiên bản sản phẩm">
+                            <div th:each="variant, iter : ${product.variants}"
+                                 class="form-check fitshop-variant-option"
+                                 th:classappend="${!variant.active or variant.stock <= 0} ? 'fitshop-variant-option--disabled bg-light text-muted'">
+                                <div class="d-flex gap-3 align-items-start">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="variantId"
+                                           th:id="'variant-' + ${variant.id}"
+                                           th:value="${variant.id}"
+                                           th:checked="${iter.index == 0}"
+                                           th:disabled="${!variant.active or variant.stock <= 0}">
+                                    <label class="form-check-label w-100 ps-0" th:for="'variant-' + ${variant.id}">
+                                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                            <span>
+                                                <strong th:text="${variant.flavor}">Vị</strong>
+                                                <span class="text-muted"> · </span>
+                                                <span th:text="${variant.weight}">Khối lượng</span>
+                                            </span>
+                                            <span class="text-md-end">
+                                                <span class="fitshop-price-display fs-6" th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Giá</span>
+                                                <br>
+                                                <small class="text-success" th:if="${variant.stock > 0}" th:text="'Còn ' + ${variant.stock} + ' sản phẩm'"></small>
+                                                <small class="text-danger" th:if="${variant.stock <= 0}">Hết hàng</small>
+                                            </span>
+                                        </div>
+                                    </label>
                                 </div>
-                            </label>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="mb-4 d-flex flex-wrap align-items-center gap-3">
-                    <label for="quantity" class="form-label mb-0 fw-semibold">Quantity</label>
-                    <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" max="99" style="width: 5.5rem;">
-                </div>
+                        <div class="fitshop-detail-qty-row mb-4">
+                            <label for="quantity" class="form-label mb-0 fw-semibold">Số lượng</label>
+                            <input type="number" class="form-control fitshop-detail-qty-input" id="quantity" name="quantity" value="1" min="1" max="99" inputmode="numeric">
+                        </div>
 
-                <button type="submit" class="btn btn-primary btn-lg w-100 d-none d-md-inline-flex align-items-center justify-content-center gap-2">
-                    <i class="bi bi-cart-plus"></i> Add to Cart
-                </button>
-            </form>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 d-none d-md-inline-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="mt-5 pt-3" th:if="${recommendedProducts != null and !recommendedProducts.isEmpty()}">
-        <h2 class="fitshop-block-title"><i class="bi bi-stars text-primary me-1"></i> <span th:text="${recommendationTitle}">Recommended</span></h2>
+    <section class="fitshop-panel mt-5" th:if="${recommendedProducts != null and !recommendedProducts.isEmpty()}">
+        <div class="fitshop-panel__head fitshop-panel__head--start">
+            <p class="fitshop-eyebrow mb-2" style="color: var(--fs-accent);">Gợi ý</p>
+            <h2 class="fitshop-section-title mb-0"><i class="bi bi-stars text-primary me-1"></i> <span th:text="${recommendationTitle}">Có thể bạn thích</span></h2>
+        </div>
         <div class="row row-cols-2 row-cols-md-4 g-3">
             <div class="col" th:each="rec : ${recommendedProducts}">
                 <div class="card h-100 fitshop-card border-0">
@@ -118,29 +139,32 @@
                     </div>
                     <div class="card-body py-3 px-3">
                         <h3 class="h6 card-title mb-1">
-                            <a th:href="@{/products/{slug}(slug=${rec.slug})}" class="fitshop-product-title-link fs-6" th:text="${rec.name}">Product</a>
+                            <a th:href="@{/products/{slug}(slug=${rec.slug})}" class="fitshop-product-title-link fs-6" th:text="${rec.name}">Sản phẩm</a>
                         </h3>
-                        <small class="text-muted d-block mb-2" th:text="${rec.brand}">Brand</small>
+                        <small class="text-muted d-block mb-2" th:text="${rec.brand}">Thương hiệu</small>
                         <span class="fitshop-price-display fs-6" th:if="${!rec.variants.isEmpty()}"
-                              th:text="${#numbers.formatDecimal(rec.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</span>
+                              th:text="${#numbers.formatDecimal(rec.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Giá</span>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="mt-5 pt-3">
-        <h2 class="fitshop-block-title"><i class="bi bi-chat-left-text text-primary me-1"></i> Reviews (<span th:text="${reviewCount}">0</span>)</h2>
+    <section class="fitshop-panel mt-4">
+        <div class="fitshop-panel__head fitshop-panel__head--start">
+            <p class="fitshop-eyebrow mb-2" style="color: var(--fs-accent);">Cộng đồng</p>
+            <h2 class="fitshop-section-title mb-0"><i class="bi bi-chat-left-text text-primary me-1"></i> Đánh giá (<span th:text="${reviewCount}">0</span>)</h2>
+        </div>
 
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
         <div sec:authorize="isAuthenticated()" class="card fitshop-review-card border-0 mb-4 overflow-hidden" th:if="${canReview}">
-            <div class="card-header fitshop-card-header border-0 rounded-0">Write a review</div>
+            <div class="card-header fitshop-card-header border-0 rounded-0">Viết đánh giá</div>
             <div class="card-body p-4">
                 <form th:action="@{/products/{slug}/reviews(slug=${product.slug})}" method="post">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Rating</label>
+                        <label class="form-label fw-semibold">Số sao</label>
                         <div class="d-flex flex-wrap gap-2">
                             <div class="form-check" th:each="i : ${#numbers.sequence(1, 5)}">
                                 <input class="form-check-input" type="radio" name="rating" th:id="'rating-' + ${i}" th:value="${i}" th:checked="${i == 5}">
@@ -151,44 +175,45 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="comment" class="form-label fw-semibold">Comment</label>
-                        <textarea class="form-control" id="comment" name="comment" rows="3" placeholder="Share your experience..."></textarea>
+                        <label for="comment" class="form-label fw-semibold">Nội dung</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3" placeholder="Chia sẻ trải nghiệm của bạn..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit review</button>
+                    <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
                 </form>
             </div>
         </div>
         <div sec:authorize="isAuthenticated()" th:if="${hasReviewed}" class="alert alert-info mb-4">
-            <i class="bi bi-check-circle"></i> You have already reviewed this product.
+            <i class="bi bi-check-circle"></i> Bạn đã đánh giá sản phẩm này.
         </div>
 
-        <div th:if="${reviews.isEmpty()}" class="fitshop-empty-state text-muted text-center small">No reviews yet. Be the first to review!</div>
+        <div th:if="${reviews.isEmpty()}" class="fitshop-empty-state text-muted text-center small">Chưa có đánh giá — hãy là người đầu tiên!</div>
         <div th:each="review : ${reviews}" class="card fitshop-review-card border-0 mb-3">
             <div class="card-body p-4">
                 <div class="d-flex flex-wrap justify-content-between gap-2">
                     <div>
-                        <strong th:text="${review.user.fullName}">User</strong>
-                        <span class="ms-2" aria-label="Rating">
+                        <strong th:text="${review.user.fullName}">Người dùng</strong>
+                        <span class="ms-2" aria-label="Điểm đánh giá">
                             <span th:each="i : ${#numbers.sequence(1, 5)}">
                                 <i th:classappend="${i <= review.rating} ? 'bi bi-star-fill text-warning' : 'bi bi-star text-muted'"></i>
                             </span>
                         </span>
                     </div>
-                    <small class="text-muted" th:text="${#temporals.format(review.createdAt, 'dd/MM/yyyy')}">Date</small>
+                    <small class="text-muted" th:text="${#temporals.format(review.createdAt, 'dd/MM/yyyy')}">Ngày</small>
                 </div>
-                <p class="mt-3 mb-0 lh-base" th:if="${review.comment != null}" th:text="${review.comment}">Comment</p>
+                <p class="mt-3 mb-0 lh-base" th:if="${review.comment != null}" th:text="${review.comment}">Nội dung</p>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 
 <div class="fitshop-mobile-cta d-md-none">
     <button type="submit" form="fitshop-product-cart-form" class="btn btn-primary btn-lg w-100 d-inline-flex align-items-center justify-content-center gap-2">
-        <i class="bi bi-cart-plus"></i> Add to Cart
+        <i class="bi bi-cart-plus"></i> Thêm vào giỏ
     </button>
 </div>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/footer :: scripts}"></div>
+<th:block th:replace="~{fragments/chat-widget :: chatWidget (productName=${product.name})}"></th:block>
 </body>
 </html>

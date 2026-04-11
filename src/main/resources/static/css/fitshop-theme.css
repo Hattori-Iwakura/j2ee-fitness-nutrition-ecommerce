@@ -638,6 +638,11 @@ h3,
   margin-bottom: 2rem;
 }
 
+.fitshop-panel__head--start {
+  text-align: start;
+  margin-bottom: 1.35rem;
+}
+
 .fitshop-masthead {
   position: relative;
   border-radius: calc(var(--fs-radius) + 4px);
@@ -1172,6 +1177,45 @@ a:focus-visible,
 }
 
 /* —— Product detail —— */
+.fitshop-detail-breadcrumb .breadcrumb {
+  padding: 0.5rem 0.85rem;
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-sm);
+  box-shadow: var(--fs-shadow);
+}
+
+.fitshop-detail-masthead .fitshop-masthead__title {
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  line-height: 1.2;
+}
+
+.fitshop-detail-rating-pill {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.65rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.9rem;
+}
+
+.fitshop-detail-rating-pill .bi-star-fill {
+  color: #fcd34d;
+}
+
+.fitshop-detail-rating-pill .bi-star {
+  color: rgba(250, 250, 250, 0.35);
+}
+
+.fitshop-detail-rating-pill__text {
+  font-size: 0.8rem;
+  color: rgba(250, 250, 250, 0.72);
+  font-weight: 500;
+}
+
 .fitshop-detail-gallery {
   position: sticky;
   top: 5.5rem;
@@ -1183,6 +1227,74 @@ a:focus-visible,
 
 .fitshop-detail-gallery .fitshop-card {
   overflow: hidden;
+}
+
+.fitshop-card--detail-gallery:hover {
+  transform: none;
+  box-shadow: var(--fs-shadow);
+  border-color: var(--fs-border);
+}
+
+.fitshop-detail-desc-card {
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border) !important;
+  border-radius: calc(var(--fs-radius) + 2px);
+  box-shadow: var(--fs-shadow);
+}
+
+.fitshop-detail-side-title {
+  font-family: var(--fs-font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fs-text);
+}
+
+.fitshop-detail-buy-card {
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: calc(var(--fs-radius) + 4px);
+  box-shadow:
+    0 20px 44px rgba(9, 9, 11, 0.07),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  overflow: hidden;
+}
+
+.fitshop-detail-buy-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(180deg, var(--fs-bg-elevated) 0%, var(--fs-surface) 100%);
+  border-bottom: 1px solid var(--fs-border);
+}
+
+.fitshop-detail-buy-card__label {
+  font-family: var(--fs-font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  color: var(--fs-text);
+}
+
+.fitshop-detail-buy-card__body {
+  padding: 1.25rem 1.25rem 1.35rem;
+}
+
+.fitshop-detail-qty-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.fitshop-detail-qty-input {
+  width: 5.5rem;
+  text-align: center;
+  font-family: var(--fs-mono);
+  font-weight: 600;
+  border-radius: var(--fs-radius-sm);
 }
 
 .fitshop-price-display {
@@ -1622,5 +1734,308 @@ body.fitshop-edge-decor .fitshop-footer {
 @media (max-width: 575.98px) {
   .fitshop-home-side {
     display: none;
+  }
+}
+
+/* —— Floating chat (storefront demo UI) —— */
+.fitshop-chat-root {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1.15rem, env(safe-area-inset-bottom));
+  z-index: 1045;
+  font-family: var(--fs-font);
+  pointer-events: none;
+}
+
+.fitshop-chat-root > * {
+  pointer-events: auto;
+}
+
+@media (max-width: 767.98px) {
+  body.fitshop-has-mobile-cta .fitshop-chat-root {
+    bottom: calc(5.5rem + max(0.75rem, env(safe-area-inset-bottom)) + 0.5rem);
+  }
+}
+
+.fitshop-chat-launcher {
+  position: relative;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: linear-gradient(135deg, var(--fs-accent), var(--fs-accent-2));
+  box-shadow: var(--fs-glow), 0 10px 28px rgba(9, 9, 11, 0.2);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.fitshop-chat-launcher:hover {
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.04);
+}
+
+.fitshop-chat-launcher:focus-visible {
+  outline: 2px solid rgba(13, 148, 136, 0.65);
+  outline-offset: 3px;
+}
+
+.fitshop-chat-launcher .bi {
+  font-size: 1.45rem;
+}
+
+.fitshop-chat-launcher__pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(45, 212, 191, 0.45);
+  animation: fitshop-chat-pulse 2.4s ease-out infinite;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fitshop-chat-launcher__pulse {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+@keyframes fitshop-chat-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+}
+
+.fitshop-chat-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(3.6rem + 0.85rem);
+  width: min(100vw - 2rem, 28rem);
+  max-height: min(78vh, 36rem);
+  display: flex;
+  flex-direction: column;
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border-strong);
+  border-radius: calc(var(--fs-radius) + 4px);
+  box-shadow: 0 20px 50px rgba(9, 9, 11, 0.18), var(--fs-shadow);
+  overflow: hidden;
+  transform-origin: 85% 100%;
+  animation: fitshop-chat-pop 0.22s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fitshop-chat-panel {
+    animation: none;
+  }
+}
+
+@keyframes fitshop-chat-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.fitshop-chat-panel[hidden] {
+  display: none !important;
+}
+
+.fitshop-chat-panel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 1rem 1.15rem;
+  background: linear-gradient(180deg, rgba(9, 9, 11, 0.97), rgba(9, 9, 11, 0.92));
+  color: #fafafa;
+  border-bottom: 1px solid rgba(45, 212, 191, 0.2);
+}
+
+.fitshop-chat-panel__brand {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.fitshop-chat-panel__avatar {
+  width: 2.65rem;
+  height: 2.65rem;
+  border-radius: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.3), rgba(167, 139, 250, 0.35));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fde68a;
+}
+
+.fitshop-chat-panel__title {
+  font-family: var(--fs-font-display);
+  font-weight: 700;
+  font-size: 1.08rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.fitshop-chat-panel__status {
+  font-size: 0.74rem;
+  color: rgba(250, 250, 250, 0.55);
+  margin-top: 0.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fitshop-chat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.25);
+}
+
+.fitshop-chat-close {
+  color: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 11px;
+  padding: 0.4rem 0.5rem;
+  line-height: 1;
+}
+
+.fitshop-chat-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.fitshop-chat-panel__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(244, 244, 245, 0.65), #fff 40%);
+}
+
+.fitshop-chat-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.75rem 0.9rem 0.45rem;
+  border-bottom: 1px solid var(--fs-border);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.fitshop-chat-chip {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.34rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--fs-border-strong);
+  background: #fff;
+  color: var(--fs-text);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.fitshop-chat-chip:hover {
+  border-color: rgba(13, 148, 136, 0.45);
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.08), rgba(99, 102, 241, 0.06));
+  box-shadow: 0 0 0 1px rgba(13, 148, 136, 0.12);
+}
+
+.fitshop-chat-messages {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0.75rem 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-height: 12.5rem;
+}
+
+.fitshop-chat-bubble {
+  display: flex;
+  max-width: 100%;
+}
+
+.fitshop-chat-bubble--user {
+  justify-content: flex-end;
+}
+
+.fitshop-chat-bubble__inner {
+  max-width: 92%;
+  padding: 0.6rem 0.85rem;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.fitshop-chat-bubble--bot .fitshop-chat-bubble__inner {
+  background: #fff;
+  border: 1px solid var(--fs-border);
+  color: var(--fs-text);
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--fs-shadow);
+}
+
+.fitshop-chat-bubble--user .fitshop-chat-bubble__inner {
+  background: linear-gradient(135deg, var(--fs-accent), #0f766e);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 6px 18px rgba(13, 148, 136, 0.25);
+}
+
+.fitshop-chat-panel__foot {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.8rem 0.9rem;
+  border-top: 1px solid var(--fs-border);
+  background: #fff;
+}
+
+.fitshop-chat-input {
+  font-size: 0.92rem;
+  min-height: 2.65rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid var(--fs-border-strong);
+}
+
+.fitshop-chat-input:focus {
+  border-color: rgba(13, 148, 136, 0.55);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+.fitshop-chat-send {
+  border-radius: 12px;
+  padding-inline: 1rem;
+  min-height: 2.65rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 575.98px) {
+  .fitshop-chat-panel {
+    right: 0;
+    width: min(100vw - 1.25rem, 100%);
+    max-height: min(78vh, 32rem);
   }
 }
