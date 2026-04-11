@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('My Profile - FitShop')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="container fitshop-page">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4"><i class="bi bi-person-circle"></i> My Profile</h2>
+
+            <!-- Flash messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-1"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Profile Information Card -->
+            <div class="card fitshop-auth-panel border-0 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3"><i class="bi bi-pencil-square me-1"></i> Profile Information</h5>
+                    <form th:action="@{/profile/update}" th:object="${profileRequest}" method="post">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email"
+                                   th:value="${user.email}" readonly disabled>
+                            <div class="form-text">Email cannot be changed.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullName" th:field="*{fullName}"
+                                   th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" class="form-control" id="phone" th:field="*{phone}"
+                                   placeholder="Enter phone number">
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" th:field="*{address}" rows="3"
+                                      placeholder="Enter your delivery address"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i> Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Change Password Card -->
+            <div class="card fitshop-auth-panel border-0 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3"><i class="bi bi-shield-lock me-1"></i> Change Password</h5>
+                    <form th:action="@{/profile/change-password}" th:object="${passwordRequest}" method="post">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" th:field="*{currentPassword}"
+                                   th:classappend="${#fields.hasErrors('currentPassword')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" th:field="*{newPassword}"
+                                   th:classappend="${#fields.hasErrors('newPassword')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmNewPassword" th:field="*{confirmNewPassword}"
+                                   th:classappend="${#fields.hasErrors('confirmNewPassword')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmNewPassword')}" th:errors="*{confirmNewPassword}"></div>
+                        </div>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-key me-1"></i> Update Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Account Info -->
+            <div class="card fitshop-auth-panel border-0">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3"><i class="bi bi-info-circle me-1"></i> Account Info</h5>
+                    <div class="row">
+                        <div class="col-sm-4 text-muted">Member since</div>
+                        <div class="col-sm-8" th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">01/01/2026</div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-sm-4 text-muted">Total orders</div>
+                        <div class="col-sm-8" th:text="${user.orders != null ? user.orders.size() : 0}">0</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

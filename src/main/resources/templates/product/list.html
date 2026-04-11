@@ -4,14 +4,14 @@
 <body>
 <nav th:replace="~{fragments/header :: navbar}"></nav>
 
-<div class="container mt-4">
+<div class="container fitshop-page">
     <div class="row">
         <!-- Sidebar: Filters -->
         <div class="col-md-3">
             <form th:action="@{/products}" method="get" id="filterForm">
                 <!-- Categories -->
-                <div class="card mb-3">
-                    <div class="card-header bg-dark text-white">Categories</div>
+                <div class="fitshop-filter-card">
+                    <div class="card-header">Categories</div>
                     <div class="list-group list-group-flush">
                         <a th:href="@{/products}" class="list-group-item list-group-item-action"
                            th:classappend="${filter.category == null or filter.category.isBlank()} ? 'active'">All Products</a>
@@ -27,8 +27,8 @@
                 <input type="hidden" name="category" th:value="${filter.category}">
 
                 <!-- Search -->
-                <div class="card mb-3">
-                    <div class="card-header bg-dark text-white">Search</div>
+                <div class="fitshop-filter-card">
+                    <div class="card-header">Search</div>
                     <div class="card-body">
                         <div class="input-group">
                             <input type="text" class="form-control" name="keyword" th:value="${filter.keyword}" placeholder="Search products...">
@@ -38,8 +38,8 @@
                 </div>
 
                 <!-- Price Range -->
-                <div class="card mb-3">
-                    <div class="card-header bg-dark text-white">Price Range</div>
+                <div class="fitshop-filter-card">
+                    <div class="card-header">Price Range</div>
                     <div class="card-body">
                         <div class="row g-2">
                             <div class="col-6">
@@ -55,8 +55,8 @@
                 </div>
 
                 <!-- Brand Filter -->
-                <div class="card mb-3" th:if="${allBrands != null and !allBrands.isEmpty()}">
-                    <div class="card-header bg-dark text-white">Brand</div>
+                <div class="fitshop-filter-card" th:if="${allBrands != null and !allBrands.isEmpty()}">
+                    <div class="card-header">Brand</div>
                     <div class="card-body" style="max-height: 200px; overflow-y: auto;">
                         <div class="form-check" th:each="brand : ${allBrands}">
                             <input class="form-check-input" type="checkbox" name="brands"
@@ -68,7 +68,7 @@
                 </div>
 
                 <!-- In Stock Only -->
-                <div class="card mb-3">
+                <div class="fitshop-filter-card">
                     <div class="card-body">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" name="inStockOnly"
@@ -92,11 +92,12 @@
 
         <!-- Product Grid -->
         <div class="col-md-9">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
                 <div>
-                    <h2 th:if="${currentCategory != null}" th:text="${currentCategory.name}">Products</h2>
-                    <h2 th:if="${filter.keyword != null and !filter.keyword.isBlank()}">Search: "<span th:text="${filter.keyword}"></span>"</h2>
-                    <h2 th:if="${(currentCategory == null) and (filter.keyword == null or filter.keyword.isBlank())}">All Products</h2>
+                    <p class="fitshop-eyebrow mb-1" style="color: var(--fs-accent);">Catalog</p>
+                    <h2 class="fitshop-section-title mb-1" th:if="${currentCategory != null}" th:text="${currentCategory.name}">Products</h2>
+                    <h2 class="fitshop-section-title mb-1" th:if="${filter.keyword != null and !filter.keyword.isBlank()}">Search: "<span th:text="${filter.keyword}"></span>"</h2>
+                    <h2 class="fitshop-section-title mb-1" th:if="${(currentCategory == null) and (filter.keyword == null or filter.keyword.isBlank())}">All Products</h2>
                     <small class="text-muted" th:text="${products.totalElements} + ' product(s) found'">N products found</small>
                 </div>
 
@@ -125,7 +126,7 @@
 
             <div class="row g-4" th:if="${!products.isEmpty()}">
                 <div class="col-md-4" th:each="product : ${products}">
-                    <div class="card h-100 shadow-sm position-relative">
+                    <div class="card h-100 fitshop-card border-0 position-relative">
                         <!-- Wishlist heart -->
                         <div sec:authorize="isAuthenticated()" class="position-absolute top-0 end-0 m-2" style="z-index: 1;">
                             <form th:if="${wishlistedIds != null and wishlistedIds.contains(product.id)}" th:action="@{/wishlist/remove}" method="post">
@@ -142,7 +143,7 @@
                             </form>
                         </div>
                         <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Product image">
-                        <div th:if="${product.imageUrl == null}" class="text-center p-4 bg-light">
+                        <div th:if="${product.imageUrl == null}" class="text-center p-4 fitshop-placeholder-icon" style="height: 200px; display: flex; align-items: center; justify-content: center;">
                             <i class="bi bi-box-seam display-4 text-muted"></i>
                         </div>
                         <div class="card-body d-flex flex-column">

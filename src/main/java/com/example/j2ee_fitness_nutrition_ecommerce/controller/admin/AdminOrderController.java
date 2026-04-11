@@ -3,16 +3,24 @@ package com.example.j2ee_fitness_nutrition_ecommerce.controller.admin;
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.Order;
 import com.example.j2ee_fitness_nutrition_ecommerce.enums.OrderStatus;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.EmailService;
+import com.example.j2ee_fitness_nutrition_ecommerce.service.OrderExportService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.OrderService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.PaymentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin/orders")
@@ -21,11 +29,14 @@ public class AdminOrderController {
     private final OrderService orderService;
     private final PaymentService paymentService;
     private final EmailService emailService;
+    private final OrderExportService orderExportService;
 
-    public AdminOrderController(OrderService orderService, PaymentService paymentService, EmailService emailService) {
+    public AdminOrderController(OrderService orderService, PaymentService paymentService,
+                                EmailService emailService, OrderExportService orderExportService) {
         this.orderService = orderService;
         this.paymentService = paymentService;
         this.emailService = emailService;
+        this.orderExportService = orderExportService;
     }
 
     @GetMapping
@@ -88,4 +99,18 @@ public class AdminOrderController {
         redirectAttributes.addFlashAttribute("success", "Payment marked as failed.");
         return "redirect:/admin/orders/" + id;
     }
+
+    @GetMapping("/export/csv")
+    public ResponseEntity<byte[]> exportCsv() {
+        List<Order> allOrders = orderService.findAll();
+        byte[] csvBytes = orderExportService.exportOrdersToCsv(allOrders);
+
+        String filename = "orders-" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + ".csv";
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(csvBytes);
+    }
 }
+

@@ -1,13 +1,37 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
-<footer th:fragment="footer" class="bg-dark text-white py-4 mt-5">
-    <div class="container text-center">
-        <p class="mb-0">&copy; 2026 FitShop - Fitness & Nutrition Supplements. All rights reserved.</p>
+<footer th:fragment="footer" class="fitshop-footer mt-5">
+    <div class="container">
+        <div class="row g-4 align-items-start">
+            <div class="col-md-4 text-md-start text-center">
+                <div class="fw-bold text-white mb-2" style="letter-spacing: -0.02em;">
+                    <i class="bi bi-lightning-charge-fill" style="color: #2dd4bf;"></i> FitShop
+                </div>
+                <p class="small mb-0" style="color: rgba(250,250,250,0.55);">Thực phẩm bổ sung thể hình — whey, mass gainer, pre-workout và hơn thế nữa.</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="fs-mono-label mb-2">Cửa hàng</div>
+                <a th:href="@{/}" class="d-block small py-1">Trang chủ</a>
+                <a th:href="@{/products}" class="d-block small py-1">Sản phẩm</a>
+            </div>
+            <div class="col-md-4 text-md-end text-center">
+                <div class="fs-mono-label mb-2">Tài khoản</div>
+                <a th:href="@{/login}" class="d-block small py-1">Đăng nhập</a>
+                <a th:href="@{/register}" class="d-block small py-1">Đăng ký</a>
+            </div>
+        </div>
+        <hr class="border-secondary opacity-25 my-4">
+        <p class="text-center small mb-0" style="color: rgba(250,250,250,0.45);">&copy; 2026 FitShop. All rights reserved.</p>
     </div>
 </footer>
 <div th:fragment="scripts">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chat Widget (authenticated users only) -->
+    <link rel="stylesheet" th:href="@{/css/chat-widget.css}" sec:authorize="isAuthenticated()">
+    <div th:replace="~{fragments/chat-widget :: chat}" sec:authorize="isAuthenticated()"></div>
+    <script th:src="@{/js/chat-widget.js}" sec:authorize="isAuthenticated()"></script>
 </div>
 </body>
 </html>
