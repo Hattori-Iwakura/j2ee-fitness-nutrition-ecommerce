@@ -4,16 +4,17 @@
 <body>
 <nav th:replace="~{fragments/header :: navbar}"></nav>
 
-<div class="container mt-4">
-    <h2><i class="bi bi-credit-card"></i> Checkout</h2>
+<div class="container fitshop-page">
+    <p class="fitshop-eyebrow mb-1" style="color: var(--fs-accent);">Checkout</p>
+    <h2 class="fitshop-section-title"><i class="bi bi-credit-card me-2"></i>Shipping &amp; payment</h2>
 
     <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-    <div class="row">
-        <div class="col-md-7">
-            <div class="card">
-                <div class="card-header bg-dark text-white">Shipping Information</div>
-                <div class="card-body">
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card fitshop-card border-0 h-100">
+                <div class="card-header fitshop-card-header border-0 rounded-0">Shipping information</div>
+                <div class="card-body p-4">
                     <form th:action="@{/checkout}" th:object="${checkoutRequest}" method="post">
                         <div class="mb-3">
                             <label for="fullName" class="form-label">Full Name</label>
@@ -37,64 +38,62 @@
                             <label for="note" class="form-label">Note (optional)</label>
                             <textarea class="form-control" id="note" rows="2" th:field="*{note}"></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Payment Method</label>
-                            <div class="form-check border rounded p-3 mb-2">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold mb-3">Payment method</label>
+                            <div class="form-check fitshop-payment-option">
                                 <input class="form-check-input" type="radio" name="paymentMethod" id="pm-cod" value="COD" checked>
-                                <label class="form-check-label" for="pm-cod">
-                                    <i class="bi bi-cash-coin"></i> Cash on Delivery (COD)
+                                <label class="form-check-label w-100 ps-1" for="pm-cod">
+                                    <i class="bi bi-cash-coin me-2"></i> Cash on delivery (COD)
                                 </label>
                             </div>
-                            <div class="form-check border rounded p-3 mb-2">
+                            <div class="form-check fitshop-payment-option">
                                 <input class="form-check-input" type="radio" name="paymentMethod" id="pm-bank" value="BANK_TRANSFER">
-                                <label class="form-check-label" for="pm-bank">
-                                    <i class="bi bi-bank"></i> Bank Transfer
+                                <label class="form-check-label w-100 ps-1" for="pm-bank">
+                                    <i class="bi bi-bank me-2"></i> Bank transfer
                                 </label>
                             </div>
-                            <div class="form-check border rounded p-3 mb-2">
+                            <div class="form-check fitshop-payment-option">
                                 <input class="form-check-input" type="radio" name="paymentMethod" id="pm-ewallet" value="E_WALLET">
-                                <label class="form-check-label" for="pm-ewallet">
-                                    <i class="bi bi-wallet2"></i> E-Wallet
+                                <label class="form-check-label w-100 ps-1" for="pm-ewallet">
+                                    <i class="bi bi-wallet2 me-2"></i> E-wallet
                                 </label>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg w-100">
-                            <i class="bi bi-check-circle"></i> Place Order
+                        <button type="submit" class="btn btn-primary btn-lg w-100 d-inline-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-check-circle"></i> Place order
                         </button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-5">
-            <div class="card">
-                <div class="card-header bg-dark text-white">Order Summary</div>
+        <div class="col-lg-5">
+            <div class="card fitshop-card fitshop-summary-card border-0 sticky-lg-top fitshop-sticky-summary">
+                <div class="card-header fitshop-card-header border-0 rounded-0">Order summary</div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between" th:each="item : ${cartItems}">
-                        <div>
-                            <strong th:text="${item.productName}">Product</strong><br>
-                            <small class="text-muted" th:text="${item.flavor} + ' - ' + ${item.weight}">Variant</small>
-                            <small class="text-muted" th:text="' x' + ${item.quantity}">Qty</small>
+                    <li class="list-group-item d-flex justify-content-between align-items-start gap-2 py-3" th:each="item : ${cartItems}">
+                        <div class="min-w-0">
+                            <strong class="d-block" th:text="${item.productName}">Product</strong>
+                            <small class="text-muted" th:text="${item.flavor} + ' · ' + ${item.weight} + ' × ' + ${item.quantity}">Variant</small>
                         </div>
-                        <span class="fw-bold" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Subtotal</span>
+                        <span class="fw-semibold text-nowrap fitshop-price-display fs-6" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Subtotal</span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between fs-5">
-                        <strong>Subtotal</strong>
+                    <li class="list-group-item d-flex justify-content-between py-3">
+                        <span class="text-muted">Subtotal</span>
                         <strong th:text="${#numbers.formatDecimal(cartTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Subtotal</strong>
                     </li>
-                    <li class="list-group-item" th:if="${discount != null}">
+                    <li class="list-group-item py-3" th:if="${discount != null}">
                         <div class="d-flex justify-content-between text-success">
                             <span>Discount (<span th:text="${couponCode}">CODE</span>)</span>
                             <span th:text="'-' + ${#numbers.formatDecimal(discount, 0, 'COMMA', 0, 'POINT')} + ' VND'">-50,000 VND</span>
                         </div>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between fs-5 bg-light">
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3 fs-5 bg-light">
                         <strong>Total</strong>
-                        <strong class="text-primary" th:text="${#numbers.formatDecimal(finalTotal != null ? finalTotal : cartTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Total</strong>
+                        <strong class="fitshop-price-display" th:text="${#numbers.formatDecimal(finalTotal != null ? finalTotal : cartTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'">Total</strong>
                     </li>
                 </ul>
-                <!-- Coupon Section -->
-                <div class="card-body">
+                <div class="card-body border-top fitshop-divider-top">
                     <div th:if="${couponError}" class="alert alert-danger small mb-2" th:text="${couponError}"></div>
                     <div th:if="${success}" class="alert alert-success small mb-2" th:text="${success}"></div>
                     <div th:if="${couponCode != null}">

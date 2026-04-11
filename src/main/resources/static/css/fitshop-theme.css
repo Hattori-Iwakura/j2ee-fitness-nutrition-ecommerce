@@ -13,39 +13,93 @@
   --fs-accent-2: #6366f1;
   --fs-radius: 14px;
   --fs-radius-sm: 10px;
-  --fs-font: "DM Sans", system-ui, -apple-system, sans-serif;
+  --fs-font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fs-font-display: "Outfit", "Plus Jakarta Sans", system-ui, sans-serif;
   --fs-mono: "JetBrains Mono", ui-monospace, monospace;
   --fs-shadow: 0 1px 2px rgba(9, 9, 11, 0.04), 0 4px 16px rgba(9, 9, 11, 0.06);
   --fs-shadow-hover: 0 8px 30px rgba(9, 9, 11, 0.1);
+  --fs-glow: 0 0 0 1px rgba(13, 148, 136, 0.12), 0 12px 40px rgba(99, 102, 241, 0.08);
 }
 
 body {
   font-family: var(--fs-font);
-  background-color: var(--fs-bg);
   color: var(--fs-text);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background-color: var(--fs-bg);
+  background-image:
+    radial-gradient(ellipse 100% 80% at 100% 0%, rgba(99, 102, 241, 0.11), transparent 55%),
+    radial-gradient(ellipse 90% 70% at 0% 100%, rgba(13, 148, 136, 0.1), transparent 50%),
+    linear-gradient(180deg, #f8f8f9 0%, var(--fs-bg) 35%, #eeeff2 100%);
+  background-attachment: fixed;
+}
+
+.btn,
+.form-control,
+.form-select,
+.input-group-text {
+  font-family: var(--fs-font);
+}
+
+h1,
+h2,
+h3,
+.h1,
+.h2,
+.h3,
+.fitshop-section-title,
+.fitshop-block-title,
+.fitshop-hero h1,
+.fitshop-hero-v2__title,
+.fitshop-masthead__title {
+  font-family: var(--fs-font-display);
+  letter-spacing: -0.02em;
+}
+
+.card-title {
+  font-family: var(--fs-font-display);
+  letter-spacing: -0.015em;
 }
 
 /* —— Navbar —— */
 .fitshop-navbar {
-  background: var(--fs-nav) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding-top: 0.65rem;
-  padding-bottom: 0.65rem;
+  background: linear-gradient(180deg, rgba(9, 9, 11, 0.97), rgba(9, 9, 11, 0.92)) !important;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(45, 212, 191, 0.22);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  padding-top: 0.55rem;
+  padding-bottom: 0.55rem;
 }
 
 .fitshop-navbar .navbar-brand {
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  font-size: 1.15rem;
+  font-family: var(--fs-font-display);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-size: 1.2rem;
   color: #fafafa !important;
 }
 
-.fitshop-navbar .navbar-brand .bi {
-  background: linear-gradient(135deg, #2dd4bf, #a78bfa);
+.fitshop-brand-mark .fitshop-brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-right: 0.35rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.25), rgba(167, 139, 250, 0.3));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  vertical-align: middle;
+}
+
+.fitshop-brand-mark .fitshop-brand-icon .bi {
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #fde68a, #fcd34d);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(252, 211, 77, 0.35));
 }
 
 .fitshop-navbar .nav-link {
@@ -61,7 +115,8 @@ body {
 .fitshop-navbar .nav-link:hover,
 .fitshop-navbar .nav-link:focus {
   color: #fff !important;
-  background: rgba(255, 255, 255, 0.06);
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.12), rgba(167, 139, 250, 0.1));
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .fitshop-navbar .nav-link.text-warning {
@@ -118,21 +173,39 @@ body {
 
 /* —— Cards —— */
 .fitshop-card {
+  position: relative;
   background: var(--fs-surface);
   border: 1px solid var(--fs-border);
-  border-radius: var(--fs-radius);
+  border-radius: calc(var(--fs-radius) + 2px);
   box-shadow: var(--fs-shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease;
   overflow: hidden;
 }
 
+.fitshop-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--fs-accent), #2dd4bf 40%, var(--fs-accent-2));
+  opacity: 0.95;
+}
+
 .fitshop-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--fs-shadow-hover);
-  border-color: var(--fs-border-strong);
+  transform: translateY(-5px);
+  box-shadow: var(--fs-shadow-hover), var(--fs-glow);
+  border-color: rgba(13, 148, 136, 0.22);
 }
 
 .fitshop-card .card-img-top {
+  border-bottom: 1px solid var(--fs-border);
+}
+
+.fitshop-card > .fitshop-media {
   border-bottom: 1px solid var(--fs-border);
 }
 
@@ -158,10 +231,146 @@ body {
 }
 
 .fitshop-filter-card .list-group-item.active {
-  background: linear-gradient(135deg, rgba(13, 148, 136, 0.15), rgba(99, 102, 241, 0.12));
-  border-color: transparent;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.18), rgba(99, 102, 241, 0.14));
+  border-color: rgba(13, 148, 136, 0.25);
   color: var(--fs-text);
   font-weight: 600;
+}
+
+/* —— Product list: sidebar filters — căn chỉnh đồng nhất —— */
+.fitshop-filter-card .card-body {
+  padding: 0.875rem 1rem;
+}
+
+.fitshop-filter-list .list-group-item {
+  padding: 0.65rem 1rem;
+  line-height: 1.4;
+  border-color: var(--fs-border);
+  font-size: 0.9375rem;
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+.fitshop-filter-list .list-group-item:first-child {
+  border-top: none;
+}
+
+.fitshop-filter-input-group {
+  align-items: stretch;
+}
+
+.fitshop-filter-input-group .form-control {
+  min-height: 2.625rem;
+  border-radius: var(--fs-radius-sm) 0 0 var(--fs-radius-sm);
+}
+
+.fitshop-filter-input-group .fitshop-filter-search-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0 var(--fs-radius-sm) var(--fs-radius-sm) 0;
+  line-height: 1;
+}
+
+.fitshop-filter-price-row {
+  --bs-gutter-x: 0.5rem;
+}
+
+.fitshop-filter-price-row > [class*="col-"] {
+  display: flex;
+}
+
+.fitshop-filter-num {
+  width: 100%;
+  min-height: 2.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.fitshop-filter-brand-scroll {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 0.35rem;
+  margin-right: -0.15rem;
+}
+
+.fitshop-filter-brand-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.fitshop-filter-brand-scroll::-webkit-scrollbar-thumb {
+  background: rgba(9, 9, 11, 0.15);
+  border-radius: 999px;
+}
+
+.fitshop-filter-check {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.85rem;
+  margin-bottom: 0.5rem;
+  padding-left: 0 !important;
+}
+
+.fitshop-filter-check:last-child {
+  margin-bottom: 0;
+}
+
+.fitshop-filter-check .form-check-input {
+  float: none !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-color: rgba(9, 9, 11, 0.28);
+}
+
+.fitshop-filter-check .form-check-label {
+  padding: 0;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.fitshop-filter-switch {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 2.25rem;
+  padding-left: 0 !important;
+}
+
+.fitshop-filter-switch .form-check-input {
+  float: none !important;
+  margin: 0 !important;
+  width: 2.5rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+
+.fitshop-filter-switch .form-check-label {
+  margin: 0;
+  padding: 0;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.fitshop-filter-actions .btn {
+  min-height: 2.65rem;
+  border-radius: var(--fs-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  font-weight: 600;
+}
+
+.fitshop-filter-actions .btn-outline-secondary {
+  border-color: var(--fs-border-strong);
 }
 
 /* —— Hero —— */
@@ -243,6 +452,269 @@ body {
   color: rgba(250, 250, 250, 0.85);
 }
 
+/* —— Hero v2 (split flagship — mới, nhìn rõ khác bản cũ) —— */
+.fitshop-hero-v2 {
+  position: relative;
+  border-radius: calc(var(--fs-radius) + 8px);
+  padding: clamp(1.75rem, 4vw, 3rem);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  background: var(--fs-nav);
+  color: #fafafa;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 28px 70px rgba(9, 9, 11, 0.35), 0 0 0 1px rgba(45, 212, 191, 0.12);
+}
+
+.fitshop-hero-v2::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 15% 25%, rgba(45, 212, 191, 0.35), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 95% 75%, rgba(99, 102, 241, 0.4), transparent 50%),
+    linear-gradient(125deg, rgba(255, 255, 255, 0.06) 0%, transparent 42%),
+    repeating-linear-gradient(
+      -12deg,
+      transparent,
+      transparent 40px,
+      rgba(255, 255, 255, 0.02) 40px,
+      rgba(255, 255, 255, 0.02) 41px
+    );
+  pointer-events: none;
+}
+
+.fitshop-hero-v2__grid {
+  position: relative;
+  z-index: 1;
+}
+
+.fitshop-hero-v2__title {
+  font-weight: 800;
+  font-size: clamp(1.9rem, 4.8vw, 3rem);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.fitshop-hero-v2__lead {
+  color: rgba(250, 250, 250, 0.78);
+  font-size: 1.05rem;
+  line-height: 1.55;
+  max-width: 26rem;
+}
+
+.fitshop-hero-v2__cta .btn-primary {
+  padding: 0.75rem 1.75rem;
+  font-size: 1rem;
+}
+
+.fitshop-hero-v2__visual {
+  position: relative;
+  min-height: 220px;
+  z-index: 1;
+}
+
+@media (min-width: 992px) {
+  .fitshop-hero-v2__visual {
+    min-height: 280px;
+  }
+}
+
+.fitshop-hero-v2__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(0.5px);
+  animation: fitshop-orb-drift 14s ease-in-out infinite;
+}
+
+.fitshop-hero-v2__orb--a {
+  width: 180px;
+  height: 180px;
+  top: 8%;
+  right: 12%;
+  background: radial-gradient(circle at 30% 30%, rgba(45, 212, 191, 0.5), rgba(13, 148, 136, 0.15) 60%, transparent 70%);
+  animation-delay: 0s;
+}
+
+.fitshop-hero-v2__orb--b {
+  width: 120px;
+  height: 120px;
+  bottom: 18%;
+  right: 38%;
+  background: radial-gradient(circle at 50% 40%, rgba(167, 139, 250, 0.55), rgba(99, 102, 241, 0.2) 55%, transparent 72%);
+  animation-delay: -4s;
+}
+
+.fitshop-hero-v2__orb--c {
+  width: 90px;
+  height: 90px;
+  top: 42%;
+  right: 4%;
+  background: radial-gradient(circle at 40% 40%, rgba(252, 211, 77, 0.35), transparent 65%);
+  animation-delay: -7s;
+}
+
+@keyframes fitshop-orb-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.95;
+  }
+  33% {
+    transform: translate(-8px, 10px) scale(1.05);
+    opacity: 1;
+  }
+  66% {
+    transform: translate(6px, -6px) scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.fitshop-hero-v2__mock {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 200px;
+  height: 140px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+  transform: rotate(-6deg);
+}
+
+.fitshop-hero-v2__mock::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.35), rgba(99, 102, 241, 0.3));
+  opacity: 0.9;
+}
+
+.fitshop-trust-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem 2rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2.5rem;
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: calc(var(--fs-radius) + 2px);
+  box-shadow: var(--fs-shadow);
+}
+
+.fitshop-trust-strip__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--fs-muted);
+  font-family: var(--fs-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fitshop-trust-strip__item .bi {
+  font-size: 1.1rem;
+  color: var(--fs-accent);
+}
+
+.fitshop-panel {
+  background: var(--fs-surface);
+  border-radius: calc(var(--fs-radius) + 6px);
+  border: 1px solid var(--fs-border);
+  box-shadow: 0 24px 48px rgba(9, 9, 11, 0.07);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  margin-top: 0.5rem;
+}
+
+.fitshop-panel__head {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.fitshop-masthead {
+  position: relative;
+  border-radius: calc(var(--fs-radius) + 4px);
+  padding: 1.35rem 1.5rem;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+  background: linear-gradient(135deg, #09090b 0%, #18181b 45%, #1e1b4b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fafafa;
+  box-shadow: 0 16px 40px rgba(9, 9, 11, 0.2);
+}
+
+.fitshop-masthead::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 80% at 100% 0%, rgba(13, 148, 136, 0.35), transparent 55%);
+  pointer-events: none;
+}
+
+.fitshop-masthead__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.fitshop-masthead__title {
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.fitshop-masthead__sub {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: rgba(250, 250, 250, 0.65);
+  max-width: 36rem;
+}
+
+@media (min-width: 768px) {
+  .fitshop-filter-sidebar {
+    position: sticky;
+    top: 5.75rem;
+    align-self: flex-start;
+    z-index: 2;
+  }
+}
+
+.fitshop-product-spotlight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.7rem 1.1rem;
+  border-radius: calc(var(--fs-radius-sm) + 2px);
+  background: linear-gradient(105deg, rgba(13, 148, 136, 0.14) 0%, rgba(99, 102, 241, 0.1) 55%, rgba(255, 255, 255, 0.5) 100%);
+  border: 1px solid rgba(13, 148, 136, 0.22);
+  box-shadow: 0 8px 24px rgba(9, 9, 11, 0.06);
+}
+
+.fitshop-product-spotlight__tag {
+  font-family: var(--fs-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fs-accent);
+  font-weight: 600;
+}
+
+.fitshop-product-spotlight__name {
+  font-family: var(--fs-font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
 /* —— Section spacing —— */
 .fitshop-page {
   padding-top: 1.5rem;
@@ -250,11 +722,139 @@ body {
 }
 
 /* —— Auth panel —— */
+.fitshop-auth-page {
+  min-height: min(72vh, 720px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 1rem;
+  padding-bottom: 2.5rem;
+}
+
 .fitshop-auth-panel {
+  position: relative;
+  overflow: hidden;
   background: var(--fs-surface);
   border: 1px solid var(--fs-border);
-  border-radius: var(--fs-radius);
-  box-shadow: var(--fs-shadow-hover);
+  border-radius: calc(var(--fs-radius) + 6px);
+  box-shadow:
+    0 24px 56px rgba(9, 9, 11, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+.fitshop-auth-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--fs-accent), #2dd4bf, var(--fs-accent-2));
+  z-index: 1;
+}
+
+.fitshop-auth-icon-wrap {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, rgba(13, 148, 136, 0.12), rgba(99, 102, 241, 0.1));
+  border: 1px solid rgba(13, 148, 136, 0.2);
+  color: var(--fs-accent);
+  font-size: 1.75rem;
+}
+
+.fitshop-auth-title {
+  font-family: var(--fs-font-display);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--fs-text);
+}
+
+.fitshop-auth-lead {
+  line-height: 1.5;
+  max-width: 22rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fitshop-auth-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fs-text);
+  margin-bottom: 0.4rem;
+}
+
+.fitshop-auth-input-group .input-group-text {
+  background: var(--fs-bg-elevated);
+  border-color: var(--fs-border-strong);
+  color: var(--fs-muted);
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
+  border-radius: var(--fs-radius-sm) 0 0 var(--fs-radius-sm);
+}
+
+.fitshop-auth-input-group .form-control {
+  border-radius: 0 var(--fs-radius-sm) var(--fs-radius-sm) 0;
+  border-color: var(--fs-border-strong);
+  font-size: 1rem;
+}
+
+.fitshop-auth-input-group .form-control:focus {
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, 0.12);
+}
+
+.fitshop-auth-input-group:focus-within .input-group-text {
+  border-color: var(--fs-accent);
+  color: var(--fs-accent);
+}
+
+.fitshop-auth-submit {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  border-radius: var(--fs-radius-sm);
+}
+
+.fitshop-auth-alert {
+  border: none;
+  border-radius: var(--fs-radius-sm);
+  font-size: 0.9rem;
+}
+
+.fitshop-auth-alert.alert-danger {
+  background: rgba(220, 53, 69, 0.1);
+  color: #842029;
+}
+
+.fitshop-auth-alert.alert-info {
+  background: rgba(13, 110, 253, 0.08);
+  color: #084298;
+}
+
+.fitshop-auth-alert.alert-success {
+  background: rgba(25, 135, 84, 0.1);
+  color: #0a4d2e;
+}
+
+.fitshop-auth-footer-text {
+  font-size: 0.9375rem;
+  color: var(--fs-muted);
+}
+
+.fitshop-auth-link {
+  font-weight: 600;
+  color: var(--fs-accent);
+  text-decoration: none;
+}
+
+.fitshop-auth-link:hover {
+  color: var(--fs-accent-hover);
+  text-decoration: underline;
 }
 
 .fitshop-auth-panel .card-title {
@@ -264,11 +864,23 @@ body {
 
 /* —— Footer —— */
 .fitshop-footer {
-  background: var(--fs-nav);
+  position: relative;
+  background: linear-gradient(180deg, #0c0c0f 0%, var(--fs-nav) 100%);
   color: rgba(250, 250, 250, 0.75);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 2.5rem 0 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2.75rem 0 2rem;
   margin-top: 4rem !important;
+}
+
+.fitshop-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--fs-accent), #2dd4bf, var(--fs-accent-2));
+  opacity: 0.95;
 }
 
 .fitshop-footer a {
@@ -286,6 +898,26 @@ body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(250, 250, 250, 0.45);
+}
+
+.fitshop-footer-legal-note {
+  font-size: 0.72rem;
+  line-height: 1.65;
+  color: rgba(250, 250, 250, 0.42);
+  max-width: 100%;
+}
+
+.fitshop-footer-legal-note p {
+  margin-bottom: 0.65rem;
+}
+
+.fitshop-footer-placeholder {
+  opacity: 0.92;
+}
+
+.fitshop-footer-placeholder:hover {
+  color: #2dd4bf !important;
+  opacity: 1;
 }
 
 /* —— Admin sidebar —— */
@@ -338,6 +970,52 @@ body {
 .pagination .page-item.active .page-link {
   background: linear-gradient(135deg, #0d9488, #4f46e5);
   border-color: transparent;
+}
+
+.fitshop-pagination-wrap {
+  width: 100%;
+  padding-left: 0.25rem;
+}
+
+.fitshop-pagination {
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
+  column-gap: 0.125rem;
+  justify-content: center;
+}
+
+.fitshop-pagination .page-item {
+  margin: 0;
+}
+
+.fitshop-pagination .page-link {
+  min-width: 2.5rem;
+  text-align: center;
+  padding: 0.375rem 0.5rem;
+}
+
+.fitshop-pagination-nav.page-link {
+  min-width: auto;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.fitshop-pagination-ellipsis .page-link {
+  border: none;
+  background: transparent;
+  color: var(--fs-muted);
+  min-width: 1.75rem;
+  pointer-events: none;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+@media (max-width: 576px) {
+  .fitshop-pagination .page-link {
+    min-width: 2.25rem;
+    font-size: 0.875rem;
+    padding: 0.35rem 0.4rem;
+  }
 }
 
 /* —— Forms —— */
@@ -406,4 +1084,543 @@ body {
 .table.fitshop-table tbody td {
   vertical-align: middle;
   border-color: var(--fs-border);
+}
+
+/* —— Focus & links —— */
+a:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--fs-accent);
+  outline-offset: 2px;
+}
+
+.fitshop-product-title-link {
+  font-family: var(--fs-font-display);
+  color: var(--fs-text);
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  transition: color 0.15s ease;
+}
+
+.fitshop-product-title-link:hover {
+  color: var(--fs-accent);
+}
+
+/* —— Consistent image regions (ecommerce grid) —— */
+.fitshop-media {
+  position: relative;
+  background: var(--fs-bg-elevated);
+  overflow: hidden;
+}
+
+.fitshop-media--1x1 {
+  aspect-ratio: 1 / 1;
+}
+
+.fitshop-media--4x3 {
+  aspect-ratio: 4 / 3;
+}
+
+.fitshop-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.fitshop-card:hover .fitshop-media img {
+  transform: scale(1.04);
+}
+
+.fitshop-media .fitshop-placeholder-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: none;
+}
+
+/* —— Page toolbar (catalog) —— */
+.fitshop-toolbar {
+  background: linear-gradient(180deg, #ffffff 0%, var(--fs-bg-elevated) 100%);
+  border: 1px solid var(--fs-border);
+  border-radius: calc(var(--fs-radius) + 2px);
+  box-shadow: var(--fs-shadow);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.fitshop-toolbar .form-select {
+  min-width: 11rem;
+}
+
+/* —— Filter chips —— */
+.fitshop-filter-chips .badge {
+  font-weight: 500;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+}
+
+/* —— Empty states —— */
+.fitshop-empty-state {
+  background: var(--fs-surface);
+  border: 1px dashed var(--fs-border-strong);
+  border-radius: var(--fs-radius);
+  padding: clamp(2rem, 5vw, 3rem);
+}
+
+/* —— Product detail —— */
+.fitshop-detail-gallery {
+  position: sticky;
+  top: 5.5rem;
+}
+
+.fitshop-detail-gallery .fitshop-media--1x1 {
+  border-radius: var(--fs-radius);
+}
+
+.fitshop-detail-gallery .fitshop-card {
+  overflow: hidden;
+}
+
+.fitshop-price-display {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fs-accent);
+}
+
+.fitshop-variant-option {
+  border: 1px solid var(--fs-border) !important;
+  border-radius: var(--fs-radius-sm) !important;
+  padding: 0.85rem 1rem !important;
+  margin-bottom: 0.65rem !important;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.fitshop-variant-option:has(.form-check-input:checked) {
+  border-color: var(--fs-accent) !important;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.08), rgba(99, 102, 241, 0.06));
+  box-shadow: 0 0 0 1px rgba(13, 148, 136, 0.2);
+}
+
+.fitshop-variant-option .form-check-input {
+  margin-top: 0.35rem;
+}
+
+.fitshop-variant-option--disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* —— Mobile sticky add-to-cart —— */
+body.fitshop-has-mobile-cta {
+  padding-bottom: 5.5rem;
+}
+
+@media (min-width: 768px) {
+  body.fitshop-has-mobile-cta {
+    padding-bottom: 0;
+  }
+}
+
+.fitshop-mobile-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1030;
+  padding: 0.75rem 1rem;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--fs-border);
+  box-shadow: 0 -4px 24px rgba(9, 9, 11, 0.08);
+}
+
+/* —— Section blocks —— */
+.fitshop-block-title {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+}
+
+.fitshop-card-header {
+  background: var(--fs-nav) !important;
+  color: #fafafa !important;
+  font-family: var(--fs-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 0.85rem 1.15rem !important;
+}
+
+.fitshop-review-card {
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-sm);
+  box-shadow: var(--fs-shadow);
+}
+
+.fitshop-payment-option {
+  border: 1px solid var(--fs-border) !important;
+  border-radius: var(--fs-radius-sm) !important;
+  padding: 0.85rem 1rem !important;
+  margin-bottom: 0.65rem !important;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.fitshop-payment-option:has(.form-check-input:checked) {
+  border-color: var(--fs-accent) !important;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.08), rgba(99, 102, 241, 0.06));
+  box-shadow: 0 0 0 1px rgba(13, 148, 136, 0.2);
+}
+
+/* —— Checkout summary —— */
+.fitshop-summary-card .list-group-item {
+  border-color: var(--fs-border);
+}
+
+.fitshop-summary-card .list-group-item:last-child {
+  border-bottom-width: 0;
+}
+
+.fitshop-sticky-summary {
+  top: 5.5rem;
+}
+
+.fitshop-divider-top {
+  border-color: var(--fs-border) !important;
+}
+
+/* —— Cart: responsive table + thumb —— */
+.fitshop-table-responsive-wrap {
+  border-radius: var(--fs-radius);
+  overflow: hidden;
+  border: 1px solid var(--fs-border);
+  box-shadow: var(--fs-shadow);
+}
+
+.fitshop-summary-bar {
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-top: none;
+  border-radius: 0 0 var(--fs-radius-sm) var(--fs-radius-sm);
+  box-shadow: var(--fs-shadow);
+}
+
+.fitshop-cart-thumb {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: var(--fs-radius-sm);
+  border: 1px solid var(--fs-border);
+  flex-shrink: 0;
+}
+
+.fitshop-cart-actions {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+@media (max-width: 767.98px) {
+  .fitshop-table-responsive-wrap {
+    border-radius: var(--fs-radius-sm);
+  }
+}
+
+/* —— Auth —— */
+.fitshop-auth-panel .card-body {
+  padding: 2rem !important;
+}
+
+.fitshop-auth-page .fitshop-auth-panel .card-body {
+  padding: 2.5rem 1.5rem !important;
+}
+
+@media (min-width: 768px) {
+  .fitshop-auth-page .fitshop-auth-panel .card-body {
+    padding: 2.75rem 2.5rem !important;
+  }
+}
+
+.fitshop-auth-eyebrow {
+  font-family: var(--fs-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fs-accent);
+  text-align: center;
+  margin-bottom: 0.35rem;
+}
+
+/* —— Wishlist heart on cards —— */
+.fitshop-wishlist-hit {
+  z-index: 2;
+}
+
+.fitshop-wishlist-hit .btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--fs-border);
+}
+
+/* —— Home: “Mới” badge on featured cards —— */
+.fitshop-card-badge-new {
+  position: absolute;
+  top: 0.65rem;
+  left: 0.65rem;
+  z-index: 4;
+  padding: 0.2rem 0.55rem;
+  font-family: var(--fs-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, var(--fs-accent), var(--fs-accent-2));
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(9, 9, 11, 0.2);
+  pointer-events: none;
+}
+
+/* —— Home: bottom CTA band —— */
+.fitshop-cta-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  border-radius: calc(var(--fs-radius) + 8px);
+  background: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(13, 148, 136, 0.09) 45%,
+    rgba(99, 102, 241, 0.08) 100%
+  );
+  border: 1px solid rgba(13, 148, 136, 0.2);
+  box-shadow: 0 20px 48px rgba(9, 9, 11, 0.07);
+}
+
+.fitshop-cta-band__title {
+  font-family: var(--fs-font-display);
+  font-weight: 800;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  letter-spacing: -0.03em;
+  color: var(--fs-text);
+}
+
+.fitshop-cta-band__sub {
+  max-width: 36rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 575.98px) {
+  .fitshop-cta-band__actions {
+    width: 100%;
+  }
+
+  .fitshop-cta-band__actions .btn {
+    flex: 1 1 auto;
+  }
+}
+
+/* —— Mép trái/phải — hình học CSS (home, login, product…) —— */
+body.fitshop-edge-decor {
+  overflow-x: clip;
+}
+
+body.fitshop-edge-decor .fitshop-edge-layer,
+body.fitshop-edge-decor .fitshop-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.fitshop-home-side {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: min(20vw, 240px);
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.fitshop-home-side--left {
+  left: 0;
+}
+
+.fitshop-home-side--right {
+  right: 0;
+}
+
+.fitshop-home-geo {
+  position: absolute;
+  display: block;
+  animation: fitshop-home-geo-drift 18s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fitshop-home-geo {
+    animation: none;
+  }
+}
+
+/* Lục giác — gradient teal / tím */
+.fitshop-home-geo--hex {
+  width: 140px;
+  height: 160px;
+  top: 12%;
+  left: -20px;
+  background: linear-gradient(
+    145deg,
+    rgba(13, 148, 136, 0.45) 0%,
+    rgba(99, 102, 241, 0.35) 55%,
+    rgba(45, 212, 191, 0.2) 100%
+  );
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    12px 18px 40px rgba(9, 9, 11, 0.12);
+  transform: perspective(420px) rotateY(-18deg) rotateZ(-8deg);
+  filter: saturate(1.05);
+}
+
+.fitshop-home-side--right .fitshop-home-geo--hex {
+  left: auto;
+  right: -20px;
+  transform: perspective(420px) rotateY(18deg) rotateZ(8deg);
+}
+
+/* Khối nghiêng — “prism” */
+.fitshop-home-geo--prism {
+  width: 100px;
+  height: 180px;
+  top: 38%;
+  left: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(99, 102, 241, 0.35) 0%,
+    rgba(13, 148, 136, 0.25) 100%
+  );
+  clip-path: polygon(15% 0%, 100% 12%, 85% 100%, 0% 88%);
+  box-shadow: 16px 10px 32px rgba(9, 9, 11, 0.1);
+  transform: perspective(380px) skewY(-6deg) rotateY(-12deg);
+  animation-delay: -4s;
+}
+
+.fitshop-home-side--right .fitshop-home-geo--prism {
+  left: auto;
+  right: 8px;
+  transform: perspective(380px) skewY(6deg) rotateY(12deg);
+}
+
+/* Quả cầu / đĩa — conic + radial */
+.fitshop-home-geo--orb {
+  width: 120px;
+  height: 120px;
+  bottom: 22%;
+  left: -10px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.45), transparent 42%),
+    conic-gradient(from 200deg, rgba(13, 148, 136, 0.5), rgba(99, 102, 241, 0.45), rgba(45, 212, 191, 0.35), rgba(13, 148, 136, 0.5));
+  box-shadow:
+    inset -6px -8px 16px rgba(0, 0, 0, 0.12),
+    8px 12px 28px rgba(99, 102, 241, 0.15);
+  transform: perspective(500px) rotateX(12deg);
+  animation-delay: -9s;
+}
+
+.fitshop-home-side--right .fitshop-home-geo--orb {
+  left: auto;
+  right: -10px;
+  transform: perspective(500px) rotateX(-12deg);
+}
+
+/* Mảnh tam giác — “shard” */
+.fitshop-home-geo--shard {
+  width: 0;
+  height: 0;
+  top: 58%;
+  left: 20px;
+  border-left: 42px solid transparent;
+  border-right: 42px solid transparent;
+  border-bottom: 100px solid rgba(13, 148, 136, 0.35);
+  filter: drop-shadow(8px 12px 14px rgba(9, 9, 11, 0.08));
+  transform: rotate(-15deg) perspective(300px) rotateX(25deg);
+  background: none;
+  animation-delay: -14s;
+}
+
+.fitshop-home-side--right .fitshop-home-geo--shard {
+  left: auto;
+  right: 20px;
+  transform: rotate(15deg) perspective(300px) rotateX(-25deg);
+}
+
+@keyframes fitshop-home-geo-drift {
+  0%,
+  100% {
+    opacity: 0.72;
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    opacity: 0.95;
+    filter: brightness(1.06) saturate(1.08);
+  }
+}
+
+/* Mirror modifier: đồng bộ animation + hướng (đã set per-side transforms) */
+.fitshop-home-geo--mirror {
+  animation-delay: -11s;
+}
+
+@media (max-width: 991.98px) {
+  .fitshop-home-side {
+    width: min(14vw, 100px);
+    opacity: 0.55;
+  }
+
+  .fitshop-home-geo--hex {
+    width: 90px;
+    height: 104px;
+  }
+
+  .fitshop-home-geo--prism {
+    width: 64px;
+    height: 120px;
+  }
+
+  .fitshop-home-geo--orb {
+    width: 72px;
+    height: 72px;
+  }
+
+  .fitshop-home-geo--shard {
+    border-left-width: 28px;
+    border-right-width: 28px;
+    border-bottom-width: 68px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .fitshop-home-side {
+    display: none;
+  }
 }

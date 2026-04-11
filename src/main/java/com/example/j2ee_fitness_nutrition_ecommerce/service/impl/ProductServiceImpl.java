@@ -106,4 +106,9 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> findBestSellers(int limit) {
         return productRepository.findBestSellers(PageRequest.of(0, limit));
     }
+
+    @Override
+    public List<Product> findNewArrivals(int limit) {
+        return productRepository.findByActiveTrueOrderByCreatedAtDesc(PageRequest.of(0, limit));
+    }
 }

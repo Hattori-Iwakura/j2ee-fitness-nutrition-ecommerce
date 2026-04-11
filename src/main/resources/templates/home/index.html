@@ -1,70 +1,147 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/header :: head('FitShop - Fitness & Nutrition Supplements')}"></head>
-<body>
+<body class="fitshop-edge-decor">
+<th:block th:replace="~{fragments/edge-decor :: edgeDecor}"></th:block>
 <nav th:replace="~{fragments/header :: navbar}"></nav>
 
-<div class="container fitshop-page">
-    <header class="fitshop-hero text-center">
-        <p class="fitshop-eyebrow mb-0">Fitness &amp; nutrition</p>
-        <h1 class="display-5 display-md-4 mt-2 mb-3">Năng lượng cho buổi tập — giao diện mới, trải nghiệm mượt</h1>
-        <p class="lead mx-auto">Whey, mass gainer, pre-workout và vitamin — chọn đúng mục tiêu, giao nhanh trong tay bạn.</p>
-        <a th:href="@{/products}" class="btn btn-primary btn-lg mt-2">Khám phá sản phẩm</a>
-        <div class="fitshop-pill-row">
-            <span class="fitshop-pill">Chính hãng</span>
-            <span class="fitshop-pill">Đủ vị &amp; khối lượng</span>
-            <span class="fitshop-pill">Giỏ hàng an toàn</span>
-        </div>
-    </header>
-
-    <div class="row g-4" th:if="${categories != null and !categories.isEmpty()}">
-        <div class="col-12 text-center mb-2">
-            <p class="fitshop-eyebrow" style="color: var(--fs-accent);">Danh mục</p>
-            <h2 class="fitshop-section-title mb-0">Chọn theo mục tiêu</h2>
-        </div>
-        <div class="col-md-4" th:each="category : ${categories}">
-            <div class="card h-100 fitshop-card border-0">
-                <img th:if="${category.imageUrl != null}" th:src="${category.imageUrl}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="Category image">
-                <div th:if="${category.imageUrl == null}" class="text-center py-5 fitshop-placeholder-icon" style="height: 180px; display: flex; align-items: center; justify-content: center;">
-                    <i class="bi bi-tags display-4 text-muted"></i>
+<div class="container fitshop-page fitshop-edge-layer">
+    <header class="fitshop-hero-v2">
+        <div class="row align-items-center g-4 fitshop-hero-v2__grid">
+            <div class="col-lg-6 text-center text-lg-start">
+                <p class="fitshop-eyebrow mb-2 mb-lg-3" style="color: #5eead4;">FitShop · 2026</p>
+                <h1 class="fitshop-hero-v2__title mb-3">Năng lượng rõ ràng — giao diện mới cho từng buổi tập</h1>
+                <p class="fitshop-hero-v2__lead mx-auto mx-lg-0 mb-4">Whey, mass, pre-workout và vitamin: chọn mục tiêu, so sánh nhanh, thanh toán gọn. Trải nghiệm được thiết kế lại từ đầu.</p>
+                <div class="fitshop-hero-v2__cta d-flex flex-wrap gap-2 justify-content-center justify-content-lg-start">
+                    <a th:href="@{/products}" class="btn btn-primary btn-lg">Khám phá sản phẩm</a>
+                    <a th:href="@{/products}" class="btn btn-outline-light btn-lg border-opacity-25">Xem bán chạy</a>
                 </div>
-                <div class="card-body text-center d-flex flex-column">
-                    <h5 class="card-title fw-bold" th:text="${category.name}">Category</h5>
-                    <p class="card-text text-muted small flex-grow-1" th:text="${category.description}">Description</p>
-                    <a th:href="@{/products(category=${category.slug})}" class="btn btn-outline-primary mt-2">Xem sản phẩm</a>
+                <div class="fitshop-pill-row justify-content-lg-start mt-4">
+                    <span class="fitshop-pill">Chính hãng</span>
+                    <span class="fitshop-pill">Đủ vị &amp; size</span>
+                    <span class="fitshop-pill">Giao nhanh</span>
+                </div>
+            </div>
+            <div class="col-lg-6 position-relative d-none d-lg-block">
+                <div class="fitshop-hero-v2__visual">
+                    <div class="fitshop-hero-v2__orb fitshop-hero-v2__orb--a" aria-hidden="true"></div>
+                    <div class="fitshop-hero-v2__orb fitshop-hero-v2__orb--b" aria-hidden="true"></div>
+                    <div class="fitshop-hero-v2__orb fitshop-hero-v2__orb--c" aria-hidden="true"></div>
+                    <div class="fitshop-hero-v2__mock" aria-hidden="true"></div>
                 </div>
             </div>
         </div>
+    </header>
+
+    <div class="fitshop-trust-strip" role="presentation">
+        <span class="fitshop-trust-strip__item"><i class="bi bi-shield-check"></i> Thanh toán an toàn</span>
+        <span class="fitshop-trust-strip__item"><i class="bi bi-truck"></i> Giao hàng linh hoạt</span>
+        <span class="fitshop-trust-strip__item"><i class="bi bi-arrow-repeat"></i> Đổi trả theo chính sách</span>
+        <span class="fitshop-trust-strip__item"><i class="bi bi-headset"></i> Hỗ trợ đơn hàng</span>
     </div>
 
-    <div class="mt-5 pt-4" th:if="${bestSellers != null and !bestSellers.isEmpty()}">
-        <div class="col-12 text-center mb-4">
-            <p class="fitshop-eyebrow" style="color: var(--fs-accent);">Bán chạy</p>
-            <h2 class="fitshop-section-title mb-0">Best sellers</h2>
+    <section class="fitshop-panel mb-5" th:if="${featuredProducts != null and !featuredProducts.isEmpty()}">
+        <div class="fitshop-panel__head">
+            <p class="fitshop-eyebrow mb-2" style="color: var(--fs-accent);">Nổi bật</p>
+            <h2 class="fitshop-section-title mb-0">Sản phẩm nổi bật</h2>
+            <p class="text-muted small mt-2 mb-0 mx-auto" style="max-width: 32rem;">Hàng mới cập nhật — xem nhanh giá và thương hiệu, bấm chi tiết để chọn vị và khối lượng.</p>
         </div>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
-            <div class="col" th:each="product : ${bestSellers}">
-                <div class="card h-100 fitshop-card border-0">
-                    <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="Product image">
-                    <div th:if="${product.imageUrl == null}" class="text-center fitshop-placeholder-icon" style="height: 180px; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-box-seam display-4 text-muted"></i>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-lg-4">
+            <div class="col" th:each="product : ${featuredProducts}">
+                <div class="card h-100 fitshop-card border-0 position-relative">
+                    <span class="fitshop-card-badge-new">Mới</span>
+                    <div class="fitshop-media fitshop-media--1x1">
+                        <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}" th:alt="${product.name}" loading="lazy">
+                        <div th:if="${product.imageUrl == null}" class="fitshop-placeholder-icon">
+                            <i class="bi bi-box-seam display-4 text-muted"></i>
+                        </div>
                     </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title fw-bold">
-                            <a th:href="@{/products/{slug}(slug=${product.slug})}" class="text-decoration-none text-dark" th:text="${product.name}">Product</a>
+                    <div class="card-body d-flex flex-column px-3 pt-3 pb-2">
+                        <h6 class="card-title mb-1 fs-6">
+                            <a th:href="@{/products/{slug}(slug=${product.slug})}" class="fitshop-product-title-link" th:text="${product.name}">Product</a>
                         </h6>
                         <small class="text-muted" th:text="${product.brand}">Brand</small>
                         <div class="mt-2" th:if="${!product.variants.isEmpty()}">
-                            <span class="fw-bold text-primary" th:text="${#numbers.formatDecimal(product.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</span>
+                            <span class="fitshop-price-display fs-6" th:text="${#numbers.formatDecimal(product.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</span>
                         </div>
                     </div>
-                    <div class="card-footer bg-transparent border-0 text-center pt-0 pb-3">
+                    <div class="card-footer bg-transparent border-0 text-center pt-0 pb-3 px-3">
                         <a th:href="@{/products/{slug}(slug=${product.slug})}" class="btn btn-outline-primary btn-sm w-100">Chi tiết</a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+        <div class="text-center mt-4">
+            <a th:href="@{/products(sort='newest')}" class="btn btn-outline-primary">Xem tất cả sản phẩm mới</a>
+        </div>
+    </section>
+
+    <section class="fitshop-panel mb-5" th:if="${categories != null and !categories.isEmpty()}">
+        <div class="fitshop-panel__head">
+            <p class="fitshop-eyebrow mb-2" style="color: var(--fs-accent);">Danh mục</p>
+            <h2 class="fitshop-section-title mb-0">Chọn theo mục tiêu</h2>
+            <p class="text-muted small mt-2 mb-0 mx-auto" style="max-width: 28rem;">Mỗi nhóm sản phẩm được bố cục thành “ô” riêng — dễ quét, dễ bấm trên điện thoại.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" th:each="category : ${categories}">
+                <div class="card h-100 fitshop-card border-0">
+                    <div class="fitshop-media fitshop-media--4x3">
+                        <img th:if="${category.imageUrl != null}" th:src="${category.imageUrl}" th:alt="${category.name}">
+                        <div th:if="${category.imageUrl == null}" class="fitshop-placeholder-icon">
+                            <i class="bi bi-tags display-4 text-muted"></i>
+                        </div>
+                    </div>
+                    <div class="card-body text-center d-flex flex-column px-4 pb-4">
+                        <h5 class="card-title fw-bold mb-2" th:text="${category.name}">Category</h5>
+                        <p class="card-text text-muted small flex-grow-1 mb-3 lh-base" th:text="${category.description}">Description</p>
+                        <a th:href="@{/products(category=${category.slug})}" class="btn btn-outline-primary mt-auto">Xem sản phẩm</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="fitshop-panel" th:if="${bestSellers != null and !bestSellers.isEmpty()}">
+        <div class="fitshop-panel__head">
+            <p class="fitshop-eyebrow mb-2" style="color: var(--fs-accent);">Bán chạy</p>
+            <h2 class="fitshop-section-title mb-0">Best sellers</h2>
+        </div>
+        <div class="row row-cols-2 row-cols-md-2 row-cols-lg-4 g-3 g-lg-4">
+            <div class="col" th:each="product : ${bestSellers}">
+                <div class="card h-100 fitshop-card border-0">
+                    <div class="fitshop-media fitshop-media--1x1">
+                        <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}" th:alt="${product.name}" loading="lazy">
+                        <div th:if="${product.imageUrl == null}" class="fitshop-placeholder-icon">
+                            <i class="bi bi-box-seam display-4 text-muted"></i>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column px-3 pt-3 pb-2">
+                        <h6 class="card-title mb-1 fs-6">
+                            <a th:href="@{/products/{slug}(slug=${product.slug})}" class="fitshop-product-title-link" th:text="${product.name}">Product</a>
+                        </h6>
+                        <small class="text-muted" th:text="${product.brand}">Brand</small>
+                        <div class="mt-2" th:if="${!product.variants.isEmpty()}">
+                            <span class="fitshop-price-display fs-6" th:text="${#numbers.formatDecimal(product.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' VND'">Price</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 text-center pt-0 pb-3 px-3">
+                        <a th:href="@{/products/{slug}(slug=${product.slug})}" class="btn btn-outline-primary btn-sm w-100">Chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="fitshop-cta-band" aria-labelledby="fitshop-cta-title">
+        <div class="fitshop-cta-band__text">
+            <h2 id="fitshop-cta-title" class="fitshop-cta-band__title mb-2">Sẵn sàng cho buổi tập tiếp theo?</h2>
+            <p class="fitshop-cta-band__sub mb-0 text-muted">Lọc theo thương hiệu, giá và còn hàng — thêm vào giỏ và thanh toán trong vài bước.</p>
+        </div>
+        <div class="fitshop-cta-band__actions d-flex flex-wrap gap-2">
+            <a th:href="@{/products}" class="btn btn-primary btn-lg">Vào cửa hàng</a>
+            <a th:href="@{/register}" class="btn btn-outline-dark btn-lg">Tạo tài khoản</a>
+        </div>
+    </section>
 </div>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>

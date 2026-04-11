@@ -20,6 +20,7 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("categories", categoryRepository.findByActiveTrue());
+        model.addAttribute("featuredProducts", productService.findNewArrivals(8));
         model.addAttribute("bestSellers", productService.findBestSellers(4));
         return "home/index";
     }

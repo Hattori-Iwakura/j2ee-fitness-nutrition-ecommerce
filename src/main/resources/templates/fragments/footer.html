@@ -4,26 +4,79 @@
 <body>
 <footer th:fragment="footer" class="fitshop-footer mt-5">
     <div class="container">
-        <div class="row g-4 align-items-start">
-            <div class="col-md-4 text-md-start text-center">
+        <div class="row g-4 g-lg-5 align-items-start justify-content-between">
+            <div class="col-12 col-md-6 col-lg-4 col-xl-3 text-center text-md-start">
                 <div class="fw-bold text-white mb-2" style="letter-spacing: -0.02em;">
                     <i class="bi bi-lightning-charge-fill" style="color: #2dd4bf;"></i> FitShop
                 </div>
-                <p class="small mb-0" style="color: rgba(250,250,250,0.55);">Thực phẩm bổ sung thể hình — whey, mass gainer, pre-workout và hơn thế nữa.</p>
+                <p class="small mb-3 fitshop-footer-block mx-auto mx-md-0" style="color: rgba(250,250,250,0.58); line-height: 1.6;">
+                    Thực phẩm bổ sung thể hình — whey, mass gainer, pre-workout, vitamin và phụ kiện tập luyện.
+                    Chúng tôi cam kết nguồn gốc rõ ràng, bảo quản đúng quy định và hỗ trợ bạn chọn sản phẩm phù hợp mục tiêu.
+                </p>
+                <p class="small mb-0" style="color: rgba(250,250,250,0.45);">
+                    <i class="bi bi-shield-check me-1" style="color: #2dd4bf;"></i> Giao dịch minh bạch · Hàng chính hãng có hóa đơn
+                </p>
             </div>
-            <div class="col-md-4 text-center">
+            <div class="col-6 col-md-4 col-lg-2 text-center text-md-start">
                 <div class="fs-mono-label mb-2">Cửa hàng</div>
                 <a th:href="@{/}" class="d-block small py-1">Trang chủ</a>
                 <a th:href="@{/products}" class="d-block small py-1">Sản phẩm</a>
+                <a th:href="@{/products(sort='newest')}" class="d-block small py-1">Hàng mới</a>
             </div>
-            <div class="col-md-4 text-md-end text-center">
+            <div class="col-6 col-md-4 col-lg-2 text-center text-md-start">
                 <div class="fs-mono-label mb-2">Tài khoản</div>
                 <a th:href="@{/login}" class="d-block small py-1">Đăng nhập</a>
                 <a th:href="@{/register}" class="d-block small py-1">Đăng ký</a>
+                <a th:href="@{/orders}" class="d-block small py-1">Đơn hàng của tôi</a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2 text-center text-md-start">
+                <div class="fs-mono-label mb-2">Pháp lý &amp; chính sách</div>
+                <a href="#" class="d-block small py-1 fitshop-footer-placeholder" title="Trang mẫu — thay bằng URL thật">Điều khoản sử dụng</a>
+                <a href="#" class="d-block small py-1 fitshop-footer-placeholder" title="Trang mẫu — thay bằng URL thật">Chính sách bảo mật</a>
+                <a href="#" class="d-block small py-1 fitshop-footer-placeholder" title="Trang mẫu — thay bằng URL thật">Chính sách giao hàng &amp; thanh toán</a>
+                <a href="#" class="d-block small py-1 fitshop-footer-placeholder" title="Trang mẫu — thay bằng URL thật">Đổi trả &amp; hoàn tiền</a>
+                <a href="#" class="d-block small py-1 fitshop-footer-placeholder" title="Trang mẫu — thay bằng URL thật">Chính sách cookie</a>
+            </div>
+            <div class="col-12 col-md-12 col-lg-4 col-xl-3 text-center text-lg-start">
+                <div class="fs-mono-label mb-2">Hỗ trợ &amp; liên hệ</div>
+                <p class="small mb-2 mb-md-3" style="color: rgba(250,250,250,0.65); line-height: 1.65;">
+                    <span class="d-block"><i class="bi bi-telephone me-1" style="color: #2dd4bf;"></i> Hotline: <strong class="text-white">1900 xxx</strong> (8:00–21:00, T2–CN)</span>
+                    <span class="d-block mt-1"><i class="bi bi-envelope me-1" style="color: #2dd4bf;"></i> Email: <a href="mailto:support@fitshop.vn">support@fitshop.vn</a></span>
+                    <span class="d-block mt-1"><i class="bi bi-geo-alt me-1" style="color: #2dd4bf;"></i> Trụ sở: [Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố]</span>
+                </p>
+                <p class="small mb-0" style="color: rgba(250,250,250,0.45);">
+                    Phản hồi trong vòng 24h làm việc đối với yêu cầu qua email và kênh hỗ trợ trực tuyến.
+                </p>
             </div>
         </div>
+
         <hr class="border-secondary opacity-25 my-4">
-        <p class="text-center small mb-0" style="color: rgba(250,250,250,0.45);">&copy; 2026 FitShop. All rights reserved.</p>
+
+        <div class="fitshop-footer-legal-note px-1 px-md-2">
+            <p class="mb-2 mb-md-3 text-center text-md-start">
+                <strong class="text-white-50" style="color: rgba(255,255,255,0.65);">Thông tin doanh nghiệp (mẫu điền chứng từ thật)</strong>
+            </p>
+            <p class="mb-2 text-center text-md-start">
+                Công ty TNHH Thương mại FitShop Việt Nam. Giấy chứng nhận đăng ký doanh nghiệp / mã số doanh nghiệp:
+                <strong class="text-white-50" style="color: rgba(255,255,255,0.7);">[0123456789]</strong> do Sở Kế hoạch và Đầu tư
+                <strong class="text-white-50" style="color: rgba(255,255,255,0.7);">[Tỉnh/Thành phố]</strong> cấp lần đầu ngày <strong class="text-white-50" style="color: rgba(255,255,255,0.7);">[dd/mm/yyyy]</strong>.
+                Người đại diện theo pháp luật: <strong class="text-white-50" style="color: rgba(255,255,255,0.7);">[Họ và tên]</strong>.
+            </p>
+            <p class="mb-2 text-center text-md-start">
+                Địa chỉ trụ sở chính ghi trên giấy phép: <strong class="text-white-50" style="color: rgba(255,255,255,0.7);">[Địa chỉ đầy đủ theo đăng ký]</strong>.
+                Sản phẩm thực phẩm bảo vệ sức khỏe / thực phẩm dinh dưỡng công nghiệp (nếu có) được công bố và lưu hành theo quy định pháp luật Việt Nam.
+            </p>
+            <p class="mb-0 text-center text-md-start">
+                Khách hàng có quyền khiếu nại, yêu cầu bồi thường theo Luật Bảo vệ người tiêu dùng và các quy định liên quan.
+                Mọi tranh chấp phát sinh ưu tiên đàm phán; không đạt sẽ thụ lý tại Tòa án có thẩm quyền tại Việt Nam.
+            </p>
+        </div>
+
+        <hr class="border-secondary opacity-25 my-3">
+
+        <p class="text-center small mb-0" style="color: rgba(250,250,250,0.45);">
+            &copy; 2026 FitShop. Bảo lưu mọi quyền. Nội dung trang mang tính minh họa; vui lòng thay thế số đăng ký, địa chỉ và chính sách bằng bản chính thức khi vận hành thương mại.
+        </p>
     </div>
 </footer>
 <div th:fragment="scripts">
