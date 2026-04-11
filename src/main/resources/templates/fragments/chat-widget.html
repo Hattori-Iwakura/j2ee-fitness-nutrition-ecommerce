@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<div th:fragment="chat" sec:authorize="isAuthenticated()">
+    <!-- CSRF meta tags for AJAX -->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <!-- Floating Action Button -->
+    <button id="chatToggleBtn" class="chat-fab" onclick="toggleChat()" type="button"
+            title="FitShop AI Assistant">
+        <i class="bi bi-chat-dots-fill"></i>
+    </button>
+
+    <!-- Chat Panel -->
+    <div id="chatPanel" class="chat-panel d-none">
+        <div class="chat-header">
+            <span><i class="bi bi-robot"></i> FitShop AI</span>
+            <div>
+                <button onclick="clearChat()" class="btn btn-sm btn-link" type="button" title="Clear chat">
+                    <i class="bi bi-trash3"></i>
+                </button>
+                <button onclick="toggleChat()" class="btn btn-sm btn-link" type="button" title="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div id="chatMessages" class="chat-messages">
+            <!-- Messages rendered by JS -->
+        </div>
+        <div class="chat-input-area">
+            <form id="chatForm" onsubmit="sendMessage(event)">
+                <div class="input-group">
+                    <input type="text" id="chatInput" class="form-control"
+                           placeholder="Hỏi tôi bất cứ điều gì..."
+                           maxlength="1000" autocomplete="off">
+                    <button type="submit" class="btn btn-primary" id="chatSendBtn">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
