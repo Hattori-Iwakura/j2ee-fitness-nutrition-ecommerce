@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Banners - Admin')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="d-flex">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+    <div class="flex-grow-1 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Banners</h2>
+            <a th:href="@{/admin/banners/create}" class="btn btn-primary">New banner</a>
+        </div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Preview</th>
+                    <th>Link</th>
+                    <th>Order</th>
+                    <th>Active</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="b : ${banners}">
+                    <td th:text="${b.id}">1</td>
+                    <td><img th:src="${b.imageUrl}" alt="" class="img-thumbnail" style="max-height: 48px;"></td>
+                    <td th:text="${b.linkUrl}">#</td>
+                    <td th:text="${b.sortOrder}">0</td>
+                    <td th:text="${b.active} ? 'Yes' : 'No'">Yes</td>
+                    <td>
+                        <a th:href="@{/admin/banners/edit/{id}(id=${b.id})}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form th:action="@{/admin/banners/delete/{id}(id=${b.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('Delete this banner?')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

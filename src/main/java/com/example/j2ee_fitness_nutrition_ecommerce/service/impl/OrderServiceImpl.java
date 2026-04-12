@@ -7,6 +7,7 @@ import com.example.j2ee_fitness_nutrition_ecommerce.repository.OrderRepository;
 import com.example.j2ee_fitness_nutrition_ecommerce.repository.ProductVariantRepository;
 import com.example.j2ee_fitness_nutrition_ecommerce.repository.UserRepository;
 import com.example.j2ee_fitness_nutrition_ecommerce.enums.PaymentMethod;
+import com.example.j2ee_fitness_nutrition_ecommerce.enums.StockChangeType;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -29,19 +30,22 @@ public class OrderServiceImpl implements OrderService {
     private final CouponService couponService;
     private final PaymentService paymentService;
     private final EmailService emailService;
+    private final StockLogService stockLogService;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             UserRepository userRepository,
                             ProductVariantRepository variantRepository,
                             CouponService couponService,
                             PaymentService paymentService,
-                            EmailService emailService) {
+                            EmailService emailService,
+                            StockLogService stockLogService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.variantRepository = variantRepository;
         this.couponService = couponService;
         this.paymentService = paymentService;
         this.emailService = emailService;
+        this.stockLogService = stockLogService;
     }
 
     @Override
@@ -71,8 +75,10 @@ public class OrderServiceImpl implements OrderService {
                         + " (" + cartItem.getFlavor() + " - " + cartItem.getWeight() + ")");
             }
 
-            variant.setStock(variant.getStock() - cartItem.getQuantity());
+            int stockBefore = variant.getStock();
+            variant.setStock(stockBefore - cartItem.getQuantity());
             variantRepository.save(variant);
+            stockLogService.log(variant, stockBefore, variant.getStock(), StockChangeType.SOLD);
 
             BigDecimal subtotal = variant.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
 

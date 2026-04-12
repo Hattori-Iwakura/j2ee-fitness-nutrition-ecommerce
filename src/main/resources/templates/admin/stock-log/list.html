@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Stock log - Admin')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="d-flex">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+    <div class="flex-grow-1 p-4">
+        <h2>Stock log</h2>
+        <p class="text-muted small">RESTOCK = nhập thêm; SOLD = bán (checkout); ADJUSTMENT = điều chỉnh giảm từ admin.</p>
+        <table class="table table-hover table-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Time</th>
+                    <th>Product</th>
+                    <th>Variant</th>
+                    <th>SKU</th>
+                    <th>Type</th>
+                    <th>Before</th>
+                    <th>After</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="log : ${logs.content}">
+                    <td th:text="${#temporals.format(log.createdAt, 'dd/MM/yyyy HH:mm')}">t</td>
+                    <td th:text="${log.variant.product.name}">p</td>
+                    <td>
+                        <span th:text="${log.variant.flavor}"></span> · <span th:text="${log.variant.weight}"></span>
+                    </td>
+                    <td th:text="${log.variant.sku}">-</td>
+                    <td th:text="${log.changeType}">SOLD</td>
+                    <td th:text="${log.stockBefore}">10</td>
+                    <td th:text="${log.stockAfter}">8</td>
+                </tr>
+            </tbody>
+        </table>
+        <nav th:if="${logs.totalPages > 1}">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${logs.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/stock-logs(page=${logs.number - 1})}">Prev</a>
+                </li>
+                <li class="page-item" th:classappend="${logs.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/stock-logs(page=${logs.number + 1})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

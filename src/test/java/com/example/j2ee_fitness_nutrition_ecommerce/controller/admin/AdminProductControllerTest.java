@@ -7,7 +7,10 @@ import com.example.j2ee_fitness_nutrition_ecommerce.entity.ProductVariant;
 import com.example.j2ee_fitness_nutrition_ecommerce.repository.ProductVariantRepository;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.CategoryService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.FileStorageService;
+import com.example.j2ee_fitness_nutrition_ecommerce.config.OAuth2LoginSuccessHandler;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.ProductService;
+import com.example.j2ee_fitness_nutrition_ecommerce.service.StockLogService;
+import com.example.j2ee_fitness_nutrition_ecommerce.service.impl.CustomOAuth2UserService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.impl.CustomUserDetailsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +40,10 @@ class AdminProductControllerTest {
     @MockitoBean private CategoryService categoryService;
     @MockitoBean private ProductVariantRepository variantRepository;
     @MockitoBean private FileStorageService fileStorageService;
+    @MockitoBean private StockLogService stockLogService;
     @MockitoBean private CustomUserDetailsService customUserDetailsService;
+    @MockitoBean private CustomOAuth2UserService customOAuth2UserService;
+    @MockitoBean private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Test
     @WithMockUser(roles = "ADMIN")

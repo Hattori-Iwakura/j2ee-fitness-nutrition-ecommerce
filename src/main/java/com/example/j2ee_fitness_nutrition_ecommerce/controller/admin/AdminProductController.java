@@ -4,10 +4,12 @@ import com.example.j2ee_fitness_nutrition_ecommerce.dto.ProductRequest;
 import com.example.j2ee_fitness_nutrition_ecommerce.dto.ProductVariantRequest;
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.Product;
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.ProductVariant;
+import com.example.j2ee_fitness_nutrition_ecommerce.enums.StockChangeType;
 import com.example.j2ee_fitness_nutrition_ecommerce.repository.ProductVariantRepository;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.CategoryService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.FileStorageService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.ProductService;
+import com.example.j2ee_fitness_nutrition_ecommerce.service.StockLogService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,15 +26,18 @@ public class AdminProductController {
     private final CategoryService categoryService;
     private final ProductVariantRepository variantRepository;
     private final FileStorageService fileStorageService;
+    private final StockLogService stockLogService;
 
     public AdminProductController(ProductService productService,
                                    CategoryService categoryService,
                                    ProductVariantRepository variantRepository,
-                                   FileStorageService fileStorageService) {
+                                   FileStorageService fileStorageService,
+                                   StockLogService stockLogService) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.variantRepository = variantRepository;
         this.fileStorageService = fileStorageService;
+        this.stockLogService = stockLogService;
     }
 
     @GetMapping
@@ -144,9 +149,12 @@ public class AdminProductController {
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
         ProductVariant variant;
-        if (request.getId() != null) {
+        int stockBefore = 0;
+        boolean isNew = request.getId() == null;
+        if (!isNew) {
             variant = variantRepository.findById(request.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Variant not found"));
+            stockBefore = variant.getStock();
         } else {
             variant = new ProductVariant();
         }
@@ -159,6 +167,15 @@ public class AdminProductController {
         variant.setProduct(product);
 
         variantRepository.save(variant);
+
+        int stockAfter = variant.getStock();
+        if (isNew) {
+            stockLogService.log(variant, 0, stockAfter, StockChangeType.RESTOCK);
+        } else if (stockAfter > stockBefore) {
+            stockLogService.log(variant, stockBefore, stockAfter, StockChangeType.RESTOCK);
+        } else if (stockAfter < stockBefore) {
+            stockLogService.log(variant, stockBefore, stockAfter, StockChangeType.ADJUSTMENT);
+        }
         redirectAttributes.addFlashAttribute("success", "Variant saved!");
         return "redirect:/admin/products/" + productId + "/variants";
     }

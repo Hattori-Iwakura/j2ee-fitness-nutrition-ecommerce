@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Contact messages - Admin')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="d-flex">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+    <div class="flex-grow-1 p-4">
+        <h2>Contact messages</h2>
+        <p th:if="${unreadCount > 0}" class="text-muted small" th:text="'Unread: ' + ${unreadCount}"></p>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>From</th>
+                    <th>Email</th>
+                    <th>Date</th>
+                    <th>Read</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="m : ${messages.content}">
+                    <td th:text="${m.id}">1</td>
+                    <td th:text="${m.fullName}">Name</td>
+                    <td th:text="${m.email}">e</td>
+                    <td th:text="${#temporals.format(m.createdAt, 'dd/MM/yyyy HH:mm')}">d</td>
+                    <td th:text="${m.read} ? 'Yes' : 'No'">No</td>
+                    <td>
+                        <a th:href="@{/admin/contact-messages/{id}(id=${m.id})}" class="btn btn-sm btn-outline-primary">Open</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <nav th:if="${messages.totalPages > 1}">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${messages.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/contact-messages(page=${messages.number - 1})}">Prev</a>
+                </li>
+                <li class="page-item" th:classappend="${messages.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/contact-messages(page=${messages.number + 1})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

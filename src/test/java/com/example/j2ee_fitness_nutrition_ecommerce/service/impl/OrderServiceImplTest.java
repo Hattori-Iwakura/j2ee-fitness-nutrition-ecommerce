@@ -32,6 +32,7 @@ class OrderServiceImplTest {
     @Mock private CouponService couponService;
     @Mock private PaymentService paymentService;
     @Mock private EmailService emailService;
+    @Mock private StockLogService stockLogService;
 
     @InjectMocks
     private OrderServiceImpl orderService;

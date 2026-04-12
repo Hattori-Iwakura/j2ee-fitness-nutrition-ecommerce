@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Banner Form - Admin')}"></head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+<div class="d-flex">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+    <div class="flex-grow-1 p-4">
+        <h2 th:text="${banner.id != null} ? 'Edit Banner' : 'New Banner'">Banner</h2>
+        <div class="card mt-3">
+            <div class="card-body">
+                <form th:action="@{/admin/banners/save}" th:object="${banner}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" th:field="*{id}">
+                    <div class="mb-3">
+                        <label class="form-label">Upload image</label>
+                        <input type="file" class="form-control" name="imageFile" accept="image/*">
+                        <div th:if="${banner.imageUrl != null and !banner.imageUrl.isEmpty()}" class="mt-2">
+                            <img th:src="${banner.imageUrl}" alt="Current" class="img-thumbnail" style="max-height: 120px;">
+                            <p class="small text-muted mb-0">Upload a new file or change the URL below to replace.</p>
+                        </div>
+                        <div th:if="${imageError}" class="text-danger small mt-1" th:text="${imageError}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Image URL</label>
+                        <input type="url" class="form-control" th:field="*{imageUrl}" placeholder="https://...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Link (optional)</label>
+                        <input type="text" class="form-control" th:field="*{linkUrl}" placeholder="https://... (empty = no link)">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sort order</label>
+                        <input type="number" class="form-control" th:field="*{sortOrder}" min="0">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" th:field="*{active}" id="active">
+                        <label class="form-check-label" for="active">Active</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a th:href="@{/admin/banners}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

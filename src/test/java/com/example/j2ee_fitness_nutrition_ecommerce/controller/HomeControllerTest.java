@@ -2,8 +2,11 @@ package com.example.j2ee_fitness_nutrition_ecommerce.controller;
 
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.Category;
 import com.example.j2ee_fitness_nutrition_ecommerce.repository.CategoryRepository;
+import com.example.j2ee_fitness_nutrition_ecommerce.service.BannerService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.ProductService;
+import com.example.j2ee_fitness_nutrition_ecommerce.config.OAuth2LoginSuccessHandler;
 import com.example.j2ee_fitness_nutrition_ecommerce.config.SecurityConfig;
+import com.example.j2ee_fitness_nutrition_ecommerce.service.impl.CustomOAuth2UserService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.impl.CustomUserDetailsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
@@ -26,7 +29,10 @@ class HomeControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private CategoryRepository categoryRepository;
     @MockitoBean private ProductService productService;
+    @MockitoBean private BannerService bannerService;
     @MockitoBean private CustomUserDetailsService customUserDetailsService;
+    @MockitoBean private CustomOAuth2UserService customOAuth2UserService;
+    @MockitoBean private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Test
     void home_returnsIndexWithCategories() throws Exception {
@@ -34,12 +40,14 @@ class HomeControllerTest {
         when(categoryRepository.findByActiveTrue()).thenReturn(List.of(cat));
         when(productService.findBestSellers(anyInt())).thenReturn(List.of());
         when(productService.findNewArrivals(anyInt())).thenReturn(List.of());
+        when(bannerService.findActiveForHome()).thenReturn(List.of());
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("home/index"))
                 .andExpect(model().attributeExists("categories"))
                 .andExpect(model().attributeExists("featuredProducts"))
-                .andExpect(model().attributeExists("bestSellers"));
+                .andExpect(model().attributeExists("bestSellers"))
+                .andExpect(model().attributeExists("banners"));
     }
 }

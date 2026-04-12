@@ -6,6 +6,26 @@
 <nav th:replace="~{fragments/header :: navbar}"></nav>
 
 <div class="container fitshop-page fitshop-edge-layer">
+    <section th:if="${banners != null and !banners.isEmpty()}" class="mb-4" aria-label="Khuyến mãi">
+        <div id="fitshopHomeBanners" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner rounded-3 overflow-hidden border border-secondary border-opacity-25">
+                <div th:each="b, iterStat : ${banners}" th:class="${iterStat.first} ? 'carousel-item active' : 'carousel-item'">
+                    <a th:href="${b.linkUrl != null and b.linkUrl != '#'} ? ${b.linkUrl} : '#'" class="d-block">
+                        <img th:src="${b.imageUrl}" class="d-block w-100" style="max-height: 22rem; object-fit: cover;" alt="Banner">
+                    </a>
+                </div>
+            </div>
+            <button th:if="${banners.size() > 1}" class="carousel-control-prev" type="button" data-bs-target="#fitshopHomeBanners" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Trước</span>
+            </button>
+            <button th:if="${banners.size() > 1}" class="carousel-control-next" type="button" data-bs-target="#fitshopHomeBanners" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Sau</span>
+            </button>
+        </div>
+    </section>
+
     <header class="fitshop-hero-v2">
         <div class="row align-items-center g-4 fitshop-hero-v2__grid">
             <div class="col-lg-6 text-center text-lg-start">

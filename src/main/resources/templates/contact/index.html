@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Liên hệ - FitShop')}"></head>
+<body class="fitshop-edge-decor">
+<th:block th:replace="~{fragments/edge-decor :: edgeDecor}"></th:block>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="container fitshop-page fitshop-edge-layer">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card fitshop-auth-panel border-0">
+                <div class="card-body">
+                    <p class="fitshop-auth-eyebrow">FitShop</p>
+                    <h3 class="card-title text-center mb-4">Liên hệ</h3>
+
+                    <div th:if="${contactSuccess}" class="alert alert-success">
+                        Đã gửi tin nhắn. Chúng tôi sẽ phản hồi trong thời gian sớm nhất.
+                    </div>
+
+                    <form th:action="@{/contact}" th:object="${contact}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Họ tên</label>
+                            <input type="text" class="form-control" th:field="*{fullName}"
+                                   th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" th:field="*{email}"
+                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Điện thoại (tuỳ chọn)</label>
+                            <input type="text" class="form-control" th:field="*{phone}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nội dung</label>
+                            <textarea class="form-control" rows="5" th:field="*{message}"
+                                      th:classappend="${#fields.hasErrors('message')} ? 'is-invalid'" required></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Gửi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>
