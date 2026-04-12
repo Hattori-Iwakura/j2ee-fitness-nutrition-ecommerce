@@ -37,7 +37,9 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setPaidAt(LocalDateTime.now());
         }
 
-        return paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
+        order.setPayment(saved);
+        return saved;
     }
 
     @Override

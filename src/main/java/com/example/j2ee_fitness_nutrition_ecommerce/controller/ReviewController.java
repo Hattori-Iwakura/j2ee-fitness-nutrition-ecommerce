@@ -2,8 +2,8 @@ package com.example.j2ee_fitness_nutrition_ecommerce.controller;
 
 import com.example.j2ee_fitness_nutrition_ecommerce.service.ProductService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.ReviewService;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.example.j2ee_fitness_nutrition_ecommerce.util.SecurityUtils;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -23,13 +23,14 @@ public class ReviewController {
     public String submitReview(@PathVariable String slug,
                                @RequestParam int rating,
                                @RequestParam(required = false) String comment,
-                               @AuthenticationPrincipal UserDetails userDetails,
+                               Authentication authentication,
                                RedirectAttributes redirectAttributes) {
+        String email = SecurityUtils.requireUserEmail(authentication);
         var product = productService.findActiveBySlug(slug)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
         try {
-            reviewService.createReview(userDetails.getUsername(), product.getId(), rating, comment);
+            reviewService.createReview(email, product.getId(), rating, comment);
             redirectAttributes.addFlashAttribute("success", "Review submitted successfully!");
         } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());

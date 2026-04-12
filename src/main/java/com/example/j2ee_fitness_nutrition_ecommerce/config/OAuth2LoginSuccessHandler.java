@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Locale;
 
 @Component
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
@@ -25,9 +26,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        String email = oAuth2User.getAttribute("email");
+        Object emailAttr = oAuth2User.getAttribute("email");
+        String email = emailAttr != null ? emailAttr.toString().trim().toLowerCase(Locale.ROOT) : null;
 
-        User user = userRepository.findByEmail(email).orElseThrow();
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new IllegalStateException("OAuth user not found after login"));
         boolean isAdmin = user.getRole().name().equals("ADMIN");
 
         response.sendRedirect(isAdmin ? "/admin" : "/");

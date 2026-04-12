@@ -1,8 +1,8 @@
 package com.example.j2ee_fitness_nutrition_ecommerce.controller;
 
 import com.example.j2ee_fitness_nutrition_ecommerce.service.WishlistService;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.example.j2ee_fitness_nutrition_ecommerce.util.SecurityUtils;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,27 +19,28 @@ public class WishlistController {
     }
 
     @GetMapping
-    public String viewWishlist(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        model.addAttribute("wishlistItems", wishlistService.getWishlist(userDetails.getUsername()));
+    public String viewWishlist(Authentication authentication, Model model) {
+        String email = SecurityUtils.requireUserEmail(authentication);
+        model.addAttribute("wishlistItems", wishlistService.getWishlist(email));
         return "wishlist/index";
     }
 
     @PostMapping("/add")
     public String add(@RequestParam Long productId,
-                      @AuthenticationPrincipal UserDetails userDetails,
+                      Authentication authentication,
                       @RequestHeader(value = "Referer", required = false) String referer,
                       RedirectAttributes redirectAttributes) {
-        wishlistService.addToWishlist(userDetails.getUsername(), productId);
+        wishlistService.addToWishlist(SecurityUtils.requireUserEmail(authentication), productId);
         redirectAttributes.addFlashAttribute("success", "Added to wishlist!");
         return "redirect:" + sanitizeRedirect(referer);
     }
 
     @PostMapping("/remove")
     public String remove(@RequestParam Long productId,
-                         @AuthenticationPrincipal UserDetails userDetails,
+                         Authentication authentication,
                          @RequestHeader(value = "Referer", required = false) String referer,
                          RedirectAttributes redirectAttributes) {
-        wishlistService.removeFromWishlist(userDetails.getUsername(), productId);
+        wishlistService.removeFromWishlist(SecurityUtils.requireUserEmail(authentication), productId);
         redirectAttributes.addFlashAttribute("success", "Removed from wishlist.");
         return "redirect:" + sanitizeRedirect(referer);
     }

@@ -5,24 +5,29 @@ import com.example.j2ee_fitness_nutrition_ecommerce.entity.Coupon;
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.Order;
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.Payment;
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.User;
-import com.example.j2ee_fitness_nutrition_ecommerce.enums.PaymentMethod;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.*;
+import com.example.j2ee_fitness_nutrition_ecommerce.util.SecurityUtils;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
 @RequestMapping("/checkout")
 public class CheckoutController {
+
+    private static final Logger log = LoggerFactory.getLogger(CheckoutController.class);
 
     private final CartService cartService;
     private final OrderService orderService;
@@ -43,15 +48,16 @@ public class CheckoutController {
     }
 
     @GetMapping
-    public String checkoutPage(@AuthenticationPrincipal UserDetails userDetails,
+    public String checkoutPage(Authentication authentication,
                                HttpSession session, Model model) {
+        String email = SecurityUtils.requireUserEmail(authentication);
         List<CartItem> cartItems = cartService.getCart(session);
         if (cartItems.isEmpty()) {
             return "redirect:/cart";
         }
 
         CheckoutRequest checkoutRequest = new CheckoutRequest();
-        User user = userService.findByEmail(userDetails.getUsername()).orElse(null);
+        User user = userService.findByEmail(email).orElse(null);
         if (user != null) {
             checkoutRequest.setFullName(user.getFullName());
             checkoutRequest.setPhone(user.getPhone());
@@ -64,7 +70,13 @@ public class CheckoutController {
         BigDecimal cartTotal = cartService.getCartTotal(session);
         model.addAttribute("cartTotal", cartTotal);
 
-        // Handle coupon from session
+        applyCouponFromSessionToModel(session, model, cartTotal);
+
+        return "checkout/index";
+    }
+
+    /** Keeps order summary (coupon / total) consistent when redisplaying the checkout form after validation errors. */
+    private void applyCouponFromSessionToModel(HttpSession session, Model model, BigDecimal cartTotal) {
         String couponCode = (String) session.getAttribute("couponCode");
         if (couponCode != null) {
             try {
@@ -77,30 +89,28 @@ public class CheckoutController {
                 session.removeAttribute("couponCode");
             }
         }
-
-        return "checkout/index";
     }
 
     @PostMapping
     public String placeOrder(@Valid @ModelAttribute CheckoutRequest checkoutRequest,
                              BindingResult result,
-                             @AuthenticationPrincipal UserDetails userDetails,
+                             Authentication authentication,
                              HttpSession session, Model model,
                              RedirectAttributes redirectAttributes) {
+        String email = SecurityUtils.requireUserEmail(authentication);
         List<CartItem> cartItems = cartService.getCart(session);
         if (cartItems.isEmpty()) {
             return "redirect:/cart";
         }
 
         if (result.hasErrors()) {
-            model.addAttribute("cartItems", cartItems);
-            model.addAttribute("cartTotal", cartService.getCartTotal(session));
+            prepareCheckoutForm(model, session, cartItems, checkoutRequest);
             return "checkout/index";
         }
 
         try {
             String couponCode = (String) session.getAttribute("couponCode");
-            Order order = orderService.createOrder(userDetails.getUsername(), checkoutRequest, cartItems, couponCode);
+            Order order = orderService.createOrder(email, checkoutRequest, cartItems, couponCode);
             cartService.clearCart(session);
             session.removeAttribute("couponCode");
 
@@ -111,11 +121,30 @@ public class CheckoutController {
             }
             return "redirect:/checkout/success?code=" + order.getOrderCode();
         } catch (IllegalStateException e) {
+            log.warn("placeOrder: {}", e.getMessage());
             model.addAttribute("error", e.getMessage());
-            model.addAttribute("cartItems", cartItems);
-            model.addAttribute("cartTotal", cartService.getCartTotal(session));
+            prepareCheckoutForm(model, session, cartItems, checkoutRequest);
+            return "checkout/index";
+        } catch (IllegalArgumentException e) {
+            log.warn("placeOrder validation: {}", e.getMessage());
+            model.addAttribute("error", e.getMessage());
+            prepareCheckoutForm(model, session, cartItems, checkoutRequest);
+            return "checkout/index";
+        } catch (Exception e) {
+            log.error("placeOrder failed", e);
+            model.addAttribute("error", "Không thể tạo đơn. Vui lòng thử lại.");
+            prepareCheckoutForm(model, session, cartItems, checkoutRequest);
             return "checkout/index";
         }
+    }
+
+    private void prepareCheckoutForm(Model model, HttpSession session, List<CartItem> cartItems,
+                                     CheckoutRequest checkoutRequest) {
+        model.addAttribute("checkoutRequest", checkoutRequest);
+        model.addAttribute("cartItems", cartItems);
+        BigDecimal cartTotal = cartService.getCartTotal(session);
+        model.addAttribute("cartTotal", cartTotal);
+        applyCouponFromSessionToModel(session, model, cartTotal);
     }
 
     @PostMapping("/apply-coupon")
@@ -142,11 +171,11 @@ public class CheckoutController {
 
     @GetMapping("/payment")
     public String paymentPage(@RequestParam String code,
-                              @AuthenticationPrincipal UserDetails userDetails,
+                              Authentication authentication,
                               Model model) {
-        Order order = orderService.findByOrderCode(code)
+        Order order = orderService.findByOrderCodeForView(code)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-        verifyOwnership(order, userDetails);
+        verifyOwnership(order, SecurityUtils.requireUserEmail(authentication));
         model.addAttribute("order", order);
         model.addAttribute("payment", order.getPayment());
         return "checkout/payment";
@@ -154,11 +183,11 @@ public class CheckoutController {
 
     @PostMapping("/payment/confirm")
     public String confirmPayment(@RequestParam String code,
-                                 @AuthenticationPrincipal UserDetails userDetails,
+                                 Authentication authentication,
                                  RedirectAttributes redirectAttributes) {
-        Order order = orderService.findByOrderCode(code)
+        Order order = orderService.findByOrderCodeForView(code)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-        verifyOwnership(order, userDetails);
+        verifyOwnership(order, SecurityUtils.requireUserEmail(authentication));
         Payment payment = order.getPayment();
         if (payment != null) {
             paymentService.confirmPayment(payment.getId());
@@ -168,29 +197,34 @@ public class CheckoutController {
 
     @GetMapping("/success")
     public String orderSuccess(@RequestParam String code,
-                               @AuthenticationPrincipal UserDetails userDetails,
-                               Model model) {
-        Order order = orderService.findByOrderCode(code)
+                             Authentication authentication,
+                             Model model) {
+        Order order = orderService.findByOrderCodeForView(code)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-        verifyOwnership(order, userDetails);
+        verifyOwnership(order, SecurityUtils.requireUserEmail(authentication));
         model.addAttribute("order", order);
 
         // Cross-sell: recommend products based on what was just purchased
-        if (!order.getOrderDetails().isEmpty()) {
-            Long firstProductId = order.getOrderDetails().get(0).getVariant().getProduct().getId();
-            var crossSell = productService.findCoPurchasedProducts(firstProductId);
-            if (crossSell.isEmpty()) {
-                Long categoryId = order.getOrderDetails().get(0).getVariant().getProduct().getCategory().getId();
-                crossSell = productService.findRelatedProducts(firstProductId, categoryId);
+        try {
+            if (!order.getOrderDetails().isEmpty()) {
+                Long firstProductId = order.getOrderDetails().get(0).getVariant().getProduct().getId();
+                var crossSell = productService.findCoPurchasedProducts(firstProductId);
+                if (crossSell.isEmpty()) {
+                    Long categoryId = order.getOrderDetails().get(0).getVariant().getProduct().getCategory().getId();
+                    crossSell = productService.findRelatedProducts(firstProductId, categoryId);
+                }
+                model.addAttribute("crossSellProducts", crossSell);
             }
-            model.addAttribute("crossSellProducts", crossSell);
+        } catch (Exception e) {
+            log.warn("Cross-sell recommendations skipped for order {}: {}", code, e.getMessage());
+            model.addAttribute("crossSellProducts", Collections.emptyList());
         }
 
         return "checkout/success";
     }
 
-    private void verifyOwnership(Order order, UserDetails userDetails) {
-        if (!order.getUser().getEmail().equals(userDetails.getUsername())) {
+    private void verifyOwnership(Order order, String userEmail) {
+        if (!order.getUser().getEmail().equalsIgnoreCase(userEmail)) {
             throw new org.springframework.security.access.AccessDeniedException("Access denied");
         }
     }

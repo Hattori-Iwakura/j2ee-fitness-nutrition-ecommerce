@@ -3,12 +3,12 @@ package com.example.j2ee_fitness_nutrition_ecommerce.controller;
 import com.example.j2ee_fitness_nutrition_ecommerce.dto.ChatRequest;
 import com.example.j2ee_fitness_nutrition_ecommerce.dto.ChatResponse;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.ai.ChatAgentService;
+import com.example.j2ee_fitness_nutrition_ecommerce.util.SecurityUtils;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,21 +26,21 @@ public class ChatController {
 
     @PostMapping
     public ResponseEntity<ChatResponse> chat(@Valid @RequestBody ChatRequest request,
-                                              @AuthenticationPrincipal UserDetails userDetails,
+                                              Authentication authentication,
                                               HttpSession session) {
-        if (userDetails == null) {
+        String userEmail = SecurityUtils.getCurrentUserEmail(authentication);
+        if (userEmail == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String userEmail = userDetails.getUsername();
         ChatResponse response = chatAgentService.chat(request.getMessage(), session, userEmail);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/clear")
-    public ResponseEntity<Void> clearHistory(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<Void> clearHistory(Authentication authentication,
                                               HttpSession session) {
-        if (userDetails == null) {
+        if (SecurityUtils.getCurrentUserEmail(authentication) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 

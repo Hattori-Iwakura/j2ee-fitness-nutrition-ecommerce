@@ -44,7 +44,7 @@ public class ReviewServiceImpl implements ReviewService {
             throw new IllegalStateException("You have already reviewed this product");
         }
 
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
@@ -79,7 +79,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public boolean hasUserReviewedProduct(String userEmail, Long productId) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return reviewRepository.existsByUserIdAndProductIdAndDeletedFalse(user.getId(), productId);
     }

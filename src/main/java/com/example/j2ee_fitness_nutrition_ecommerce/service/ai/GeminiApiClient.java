@@ -12,6 +12,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +78,10 @@ public class GeminiApiClient {
             ));
         }
 
+        body.put("toolConfig", Map.of(
+                "functionCallingConfig", Map.of("mode", "AUTO")
+        ));
+
         body.put("generationConfig", Map.of(
                 "temperature", 0.7,
                 "maxOutputTokens", 1024
@@ -107,19 +112,47 @@ public class GeminiApiClient {
                 return GeminiResponse.error("No parts in Gemini response");
             }
 
-            Map<String, Object> firstPart = parts.get(0);
-
-            // Check for function call
-            if (firstPart.containsKey("functionCall")) {
-                Map<String, Object> functionCall = (Map<String, Object>) firstPart.get("functionCall");
-                String functionName = (String) functionCall.get("name");
-                Map<String, Object> args = (Map<String, Object>) functionCall.getOrDefault("args", Map.of());
-                return GeminiResponse.functionCall(functionName, args, content);
+            List<GeminiResponse.FunctionCallInvocation> invocations = new ArrayList<>();
+            StringBuilder textBuf = new StringBuilder();
+            for (Map<String, Object> part : parts) {
+                Map<String, Object> functionCall = null;
+                if (part.containsKey("functionCall")) {
+                    functionCall = (Map<String, Object>) part.get("functionCall");
+                } else if (part.containsKey("function_call")) {
+                    functionCall = (Map<String, Object>) part.get("function_call");
+                }
+                if (functionCall != null) {
+                    String functionName = functionCall.get("name") != null
+                            ? functionCall.get("name").toString() : null;
+                    if (functionName == null || functionName.isBlank()) {
+                        log.warn("Skipping functionCall with missing name in Gemini response part");
+                        continue;
+                    }
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> args = (Map<String, Object>) functionCall.get("args");
+                    if (args == null) {
+                        args = Map.of();
+                    }
+                    String callId = functionCall.get("id") != null ? functionCall.get("id").toString() : null;
+                    invocations.add(new GeminiResponse.FunctionCallInvocation(functionName, args, callId));
+                }
+                Object textObj = part.get("text");
+                if (textObj != null) {
+                    String t = textObj.toString();
+                    if (!t.isBlank()) {
+                        if (!textBuf.isEmpty()) {
+                            textBuf.append('\n');
+                        }
+                        textBuf.append(t);
+                    }
+                }
             }
 
-            // Text response
-            String text = (String) firstPart.getOrDefault("text", "");
-            return GeminiResponse.text(text, content);
+            if (!invocations.isEmpty()) {
+                return GeminiResponse.functionCalls(invocations, content);
+            }
+
+            return GeminiResponse.text(textBuf.toString(), content);
 
         } catch (Exception e) {
             log.error("Failed to parse Gemini response", e);
@@ -130,15 +163,16 @@ public class GeminiApiClient {
     public record GeminiResponse(
             Type type,
             String text,
-            String functionName,
-            Map<String, Object> functionArgs,
+            List<FunctionCallInvocation> functionCalls,
             Map<String, Object> modelContent,
             String errorMessage
     ) {
         public enum Type { TEXT, FUNCTION_CALL, ERROR }
 
+        public record FunctionCallInvocation(String name, Map<String, Object> args, String id) {}
+
         public boolean hasFunctionCall() {
-            return type == Type.FUNCTION_CALL;
+            return type == Type.FUNCTION_CALL && functionCalls != null && !functionCalls.isEmpty();
         }
 
         public boolean isError() {
@@ -146,15 +180,15 @@ public class GeminiApiClient {
         }
 
         public static GeminiResponse text(String text, Map<String, Object> modelContent) {
-            return new GeminiResponse(Type.TEXT, text, null, null, modelContent, null);
+            return new GeminiResponse(Type.TEXT, text, List.of(), modelContent, null);
         }
 
-        public static GeminiResponse functionCall(String name, Map<String, Object> args, Map<String, Object> modelContent) {
-            return new GeminiResponse(Type.FUNCTION_CALL, null, name, args, modelContent, null);
+        public static GeminiResponse functionCalls(List<FunctionCallInvocation> calls, Map<String, Object> modelContent) {
+            return new GeminiResponse(Type.FUNCTION_CALL, null, calls, modelContent, null);
         }
 
         public static GeminiResponse error(String message) {
-            return new GeminiResponse(Type.ERROR, null, null, null, null, message);
+            return new GeminiResponse(Type.ERROR, null, List.of(), null, message);
         }
     }
 }

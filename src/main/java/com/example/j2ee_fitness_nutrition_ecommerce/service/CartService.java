@@ -37,6 +37,7 @@ public class CartService {
         for (CartItem item : cart) {
             if (item.getVariantId().equals(variantId)) {
                 item.setQuantity(item.getQuantity() + quantity);
+                session.setAttribute(CART_SESSION_KEY, cart);
                 return;
             }
         }
@@ -51,6 +52,7 @@ public class CartService {
                 variant.getProduct().getImageUrl()
         );
         cart.add(item);
+        session.setAttribute(CART_SESSION_KEY, cart);
     }
 
     public void updateQuantity(HttpSession session, Long variantId, int quantity) {

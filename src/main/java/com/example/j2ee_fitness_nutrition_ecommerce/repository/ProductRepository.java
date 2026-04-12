@@ -26,28 +26,25 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     // Related products: same category, excluding current product
     List<Product> findTop4ByCategoryIdAndActiveTrueAndIdNot(Long categoryId, Long productId);
 
-    // Co-purchased products: products frequently bought together via order history
+    // Co-purchased products: other products bought in the same order (JPQL-friendly: no ORDER BY inside IN subquery)
     @Query("""
-        SELECT p FROM Product p WHERE p.active = true AND p.id IN (
-            SELECT DISTINCT od2.variant.product.id
-            FROM OrderDetail od1
-            JOIN OrderDetail od2 ON od1.order.id = od2.order.id
-            WHERE od1.variant.product.id = :productId
-              AND od2.variant.product.id != :productId
-            GROUP BY od2.variant.product.id
-            ORDER BY COUNT(od2.variant.product.id) DESC
-        )
+        SELECT od2.variant.product FROM OrderDetail od1
+        JOIN od1.order o
+        JOIN o.orderDetails od2
+        WHERE od1.variant.product.id = :productId
+          AND od2.variant.product.id <> :productId
+          AND od2.variant.product.active = true
+        GROUP BY od2.variant.product
+        ORDER BY COUNT(od2.id) DESC
         """)
     List<Product> findCoPurchasedProducts(@Param("productId") Long productId, Pageable pageable);
 
-    // Best sellers: products with the most order details
+    // Best sellers: products with highest total quantity sold
     @Query("""
-        SELECT p FROM Product p WHERE p.active = true AND p.id IN (
-            SELECT od.variant.product.id
-            FROM OrderDetail od
-            GROUP BY od.variant.product.id
-            ORDER BY SUM(od.quantity) DESC
-        )
+        SELECT od.variant.product FROM OrderDetail od
+        WHERE od.variant.product.active = true
+        GROUP BY od.variant.product
+        ORDER BY SUM(od.quantity) DESC
         """)
     List<Product> findBestSellers(Pageable pageable);
 

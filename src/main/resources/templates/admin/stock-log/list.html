@@ -18,6 +18,7 @@
                     <th>Type</th>
                     <th>Before</th>
                     <th>After</th>
+                    <th>Δ Qty</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,6 +32,7 @@
                     <td th:text="${log.changeType}">SOLD</td>
                     <td th:text="${log.stockBefore}">10</td>
                     <td th:text="${log.stockAfter}">8</td>
+                    <td th:text="${log.quantityDelta}">-2</td>
                 </tr>
             </tbody>
         </table>

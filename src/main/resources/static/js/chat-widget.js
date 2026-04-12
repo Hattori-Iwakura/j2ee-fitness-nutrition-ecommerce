@@ -48,6 +48,7 @@
 
         fetch('/api/chat', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
                 [csrfHeader]: csrfToken
@@ -67,6 +68,10 @@
                     });
                 }
                 appendMessage('assistant', data.reply || 'No response');
+                if (data.cartUpdated) {
+                    appendMessage('assistant',
+                        '✅ **Giỏ hàng đã được cập nhật trên hệ thống.** Mở mục **Cart / Giỏ hàng** trên thanh menu để xem.');
+                }
             })
             .catch(function (err) {
                 hideTyping();
@@ -86,6 +91,7 @@
 
         fetch('/api/chat/clear', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: { [csrfHeader]: csrfToken }
         });
 
@@ -122,6 +128,7 @@
             listCategories: 'bi-grid',
             calculateTDEE: 'bi-calculator',
             recommendProducts: 'bi-stars',
+            addProductToCart: 'bi-cart-plus',
             addToCart: 'bi-cart-plus',
             getCart: 'bi-cart3',
             getOrderHistory: 'bi-clock-history',

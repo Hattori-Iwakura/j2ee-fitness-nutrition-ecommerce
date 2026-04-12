@@ -1,6 +1,8 @@
 package com.example.j2ee_fitness_nutrition_ecommerce.service.ai;
 
+import com.example.j2ee_fitness_nutrition_ecommerce.dto.ProductFilter;
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.*;
+import com.example.j2ee_fitness_nutrition_ecommerce.repository.ProductVariantRepository;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -23,18 +25,21 @@ public class AgentToolExecutor {
     private final ProductService productService;
     private final CategoryService categoryService;
     private final CartService cartService;
+    private final ProductVariantRepository variantRepository;
     private final OrderService orderService;
     private final WishlistService wishlistService;
     private final ReviewService reviewService;
     private final TdeeCalculator tdeeCalculator;
 
     public AgentToolExecutor(ProductService productService, CategoryService categoryService,
-                              CartService cartService, OrderService orderService,
+                              CartService cartService, ProductVariantRepository variantRepository,
+                              OrderService orderService,
                               WishlistService wishlistService, ReviewService reviewService,
                               TdeeCalculator tdeeCalculator) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.cartService = cartService;
+        this.variantRepository = variantRepository;
         this.orderService = orderService;
         this.wishlistService = wishlistService;
         this.reviewService = reviewService;
@@ -50,6 +55,7 @@ public class AgentToolExecutor {
                 case "listCategories" -> listCategories();
                 case "calculateTDEE" -> calculateTDEE(args);
                 case "recommendProducts" -> recommendProducts(args);
+                case "addProductToCart" -> addProductToCart(args, session);
                 case "addToCart" -> addToCart(args, session);
                 case "getCart" -> getCart(session);
                 case "getOrderHistory" -> getOrderHistory(userEmail);
@@ -64,20 +70,41 @@ public class AgentToolExecutor {
     }
 
     private ToolResult searchProducts(Map<String, Object> args) {
-        String keyword = getString(args, "keyword", "");
-        int maxResults = getInt(args, "maxResults", 5);
+        String keyword = getString(args, "keyword", "").trim();
+        String categorySlug = getString(args, "category", "").trim();
+        int page = Math.max(0, getInt(args, "page", 0));
+        int pageSize = Math.min(30, Math.max(1, getInt(args, "pageSize", 15)));
 
-        Page<Product> page = productService.searchByName(keyword, PageRequest.of(0, maxResults));
-        List<Map<String, Object>> products = page.getContent().stream()
-                .filter(Product::isActive)
+        if (!categorySlug.isEmpty() && categoryService.findActiveBySlug(categorySlug).isEmpty()) {
+            return ToolResult.error("Unknown category slug: '" + categorySlug + "'. Call listCategories for valid slugs.");
+        }
+
+        ProductFilter filter = new ProductFilter();
+        if (!keyword.isEmpty()) {
+            filter.setKeyword(keyword);
+        }
+        if (!categorySlug.isEmpty()) {
+            filter.setCategory(categorySlug);
+        }
+        filter.setSort("name-asc");
+
+        Page<Product> resultPage = productService.findWithFilter(filter, PageRequest.of(page, pageSize));
+        List<Map<String, Object>> products = resultPage.getContent().stream()
                 .map(this::toProductSummary)
                 .collect(Collectors.toList());
 
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("total_found", page.getTotalElements());
+        data.put("page", resultPage.getNumber());
+        data.put("page_size", resultPage.getSize());
+        data.put("total_elements", resultPage.getTotalElements());
+        data.put("total_pages", resultPage.getTotalPages());
+        data.put("has_next", resultPage.hasNext());
+        data.put("has_previous", resultPage.hasPrevious());
         data.put("products", products);
 
-        return new ToolResult(data, "Searched for '" + keyword + "', found " + page.getTotalElements() + " products", true);
+        String summary = "Catalog page %d/%d (%d products total)"
+                .formatted(resultPage.getNumber() + 1, Math.max(1, resultPage.getTotalPages()), resultPage.getTotalElements());
+        return new ToolResult(data, summary, true);
     }
 
     private ToolResult getProductDetail(Map<String, Object> args) {
@@ -148,8 +175,13 @@ public class AgentToolExecutor {
 
     private ToolResult recommendProducts(Map<String, Object> args) {
         String goal = getString(args, "goal", "gain");
+        String categorySlug = getString(args, "category", "").trim();
 
-        // Map goal to relevant search keywords
+        if (!categorySlug.isEmpty() && categoryService.findActiveBySlug(categorySlug).isEmpty()) {
+            return ToolResult.error("Unknown category slug: '" + categorySlug + "'. Call listCategories for valid slugs.");
+        }
+
+        // Map goal to relevant search keywords (queried against real catalog via ProductFilter)
         List<String> keywords = switch (goal.toLowerCase()) {
             case "gain" -> List.of("whey", "mass gainer", "creatine");
             case "lose" -> List.of("whey isolate", "fat burner", "l-carnitine");
@@ -158,21 +190,24 @@ public class AgentToolExecutor {
         };
 
         List<Map<String, Object>> allProducts = new ArrayList<>();
-        for (String keyword : keywords) {
-            Page<Product> page = productService.searchByName(keyword, PageRequest.of(0, 3));
-            page.getContent().stream()
-                    .filter(Product::isActive)
-                    .map(this::toProductSummary)
-                    .forEach(allProducts::add);
+        for (String kw : keywords) {
+            ProductFilter filter = new ProductFilter();
+            filter.setKeyword(kw);
+            if (!categorySlug.isEmpty()) {
+                filter.setCategory(categorySlug);
+            }
+            filter.setSort("name-asc");
+            Page<Product> page = productService.findWithFilter(filter, PageRequest.of(0, 4));
+            page.getContent().stream().map(this::toProductSummary).forEach(allProducts::add);
         }
 
-        // Also add best sellers
-        List<Product> bestSellers = productService.findBestSellers(3);
+        List<Product> bestSellers = productService.findBestSellers(5);
         bestSellers.stream()
+                .filter(p -> categorySlug.isEmpty()
+                        || (p.getCategory() != null && categorySlug.equals(p.getCategory().getSlug())))
                 .map(this::toProductSummary)
                 .forEach(allProducts::add);
 
-        // Deduplicate by slug
         List<Map<String, Object>> unique = allProducts.stream()
                 .collect(Collectors.toMap(
                         p -> (String) p.get("slug"),
@@ -181,14 +216,113 @@ public class AgentToolExecutor {
                         LinkedHashMap::new
                 ))
                 .values().stream()
-                .limit(6)
+                .limit(10)
                 .collect(Collectors.toList());
 
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("goal", goal);
+        if (!categorySlug.isEmpty()) {
+            data.put("category_slug", categorySlug);
+        }
         data.put("recommendations", unique);
 
         return new ToolResult(data, "Recommended " + unique.size() + " products for goal: " + goal, true);
+    }
+
+    private ToolResult addProductToCart(Map<String, Object> args, HttpSession session) {
+        String slug = getString(args, "productSlug", "").trim();
+        String flavorFilter = getString(args, "flavor", "").trim();
+        String weightFilter = getString(args, "weight", "").trim();
+        int quantity = getInt(args, "quantity", 1);
+
+        if (slug.isEmpty()) {
+            return ToolResult.error("productSlug is required");
+        }
+        if (quantity <= 0 || quantity > 10) {
+            return ToolResult.error("Quantity must be between 1 and 10");
+        }
+
+        Optional<Product> opt = productService.findActiveBySlug(slug);
+        if (opt.isEmpty()) {
+            return ToolResult.error("Không tìm thấy sản phẩm (slug): " + slug);
+        }
+
+        Product product = opt.get();
+        List<ProductVariant> variants = product.getVariants().stream()
+                .filter(ProductVariant::isActive)
+                .toList();
+        if (variants.isEmpty()) {
+            return ToolResult.error("Sản phẩm không có biến thể đang bán");
+        }
+
+        boolean filterByFlavor = !flavorFilter.isEmpty();
+        boolean filterByWeight = !weightFilter.isEmpty();
+        List<ProductVariant> matched = variants.stream()
+                .filter(v -> !filterByFlavor || matchesFlavor(v, flavorFilter))
+                .filter(v -> !filterByWeight || matchesWeight(v, weightFilter))
+                .toList();
+
+        if (matched.isEmpty()) {
+            Map<String, Object> err = new LinkedHashMap<>();
+            err.put("error", "Không có biến thể khớp hương vị/cân nặng. Gọi getProductDetail để xem danh sách.");
+            err.put("availableVariants", variants.stream().map(this::variantQuickInfo).toList());
+            return new ToolResult(err, "No matching variant for filters", false);
+        }
+
+        ProductVariant chosen = matched.stream()
+                .filter(v -> v.getStock() >= quantity)
+                .findFirst()
+                .orElse(null);
+        if (chosen == null) {
+            return ToolResult.error("Không đủ tồn kho cho số lượng yêu cầu (cần " + quantity + ").");
+        }
+
+        cartService.addToCart(session, chosen.getId(), quantity);
+
+        List<CartItem> cart = cartService.getCart(session);
+        BigDecimal total = cartService.getCartTotal(session);
+
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("success", true);
+        data.put("productName", product.getName());
+        data.put("variantId", chosen.getId());
+        data.put("flavor", chosen.getFlavor());
+        data.put("weight", chosen.getWeight());
+        data.put("quantityAdded", quantity);
+        data.put("cartItemCount", cart.size());
+        data.put("cartTotal", total);
+
+        String summary = "Đã thêm %s (%s, %s) x%d vào giỏ"
+                .formatted(product.getName(), chosen.getFlavor(), chosen.getWeight(), quantity);
+        return new ToolResult(data, summary, true);
+    }
+
+    private Map<String, Object> variantQuickInfo(ProductVariant v) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("variantId", v.getId());
+        m.put("flavor", v.getFlavor());
+        m.put("weight", v.getWeight());
+        m.put("stock", v.getStock());
+        return m;
+    }
+
+    private static boolean matchesFlavor(ProductVariant v, String flavorFilter) {
+        String f = compactLower(flavorFilter);
+        String vf = compactLower(v.getFlavor());
+        return vf.contains(f) || f.contains(vf);
+    }
+
+    private static boolean matchesWeight(ProductVariant v, String weightFilter) {
+        String w = compactLower(weightFilter);
+        String vw = compactLower(v.getWeight());
+        return vw.contains(w) || w.contains(vw);
+    }
+
+    private static String compactLower(String s) {
+        if (s == null) {
+            return "";
+        }
+        return s.toLowerCase(Locale.ROOT).replaceAll("\\s+", "");
     }
 
     private ToolResult addToCart(Map<String, Object> args, HttpSession session) {
@@ -200,6 +334,14 @@ public class AgentToolExecutor {
         }
         if (quantity <= 0 || quantity > 10) {
             return ToolResult.error("Quantity must be between 1 and 10");
+        }
+
+        ProductVariant variant = variantRepository.findById(variantId).orElse(null);
+        if (variant == null || !variant.isActive()) {
+            return ToolResult.error("Biến thể không tồn tại hoặc ngừng bán");
+        }
+        if (variant.getStock() < quantity) {
+            return ToolResult.error("Không đủ tồn kho (còn " + variant.getStock() + ")");
         }
 
         cartService.addToCart(session, variantId, quantity);

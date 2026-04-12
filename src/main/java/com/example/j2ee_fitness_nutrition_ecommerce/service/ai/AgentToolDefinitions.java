@@ -18,6 +18,7 @@ public class AgentToolDefinitions {
                 listCategories(),
                 calculateTDEE(),
                 recommendProducts(),
+                addProductToCart(),
                 addToCart(),
                 getCart(),
                 getOrderHistory(),
@@ -29,15 +30,19 @@ public class AgentToolDefinitions {
     private Map<String, Object> searchProducts() {
         return Map.of(
                 "name", "searchProducts",
-                "description", "Search for fitness supplement products by keyword and optional category. Returns product names, prices, brands.",
+                "description", """
+                        Search or browse active products in the shop catalog. Matches product name and description. \
+                        Use listCategories first to get valid category slugs. \
+                        Leave keyword empty to browse all products (or all in a category); use page/pageSize for pagination when there are many items.""",
                 "parameters", Map.of(
                         "type", "OBJECT",
                         "properties", Map.of(
-                                "keyword", Map.of("type", "STRING", "description", "Search keyword (e.g. 'whey', 'mass gainer', 'vitamin')"),
-                                "category", Map.of("type", "STRING", "description", "Category slug to filter (e.g. 'whey-protein', 'pre-workout'). Optional."),
-                                "maxResults", Map.of("type", "INTEGER", "description", "Maximum number of results to return. Default 5.")
+                                "keyword", Map.of("type", "STRING", "description", "Search text (e.g. 'whey', 'vitamin'). Omit or empty to browse without text filter."),
+                                "category", Map.of("type", "STRING", "description", "Optional category slug (e.g. 'whey-protein'). Filter products in that category."),
+                                "page", Map.of("type", "INTEGER", "description", "Zero-based page index. Default 0."),
+                                "pageSize", Map.of("type", "INTEGER", "description", "Items per page. Default 15, max 30.")
                         ),
-                        "required", List.of("keyword")
+                        "required", List.of()
                 )
         );
     }
@@ -89,7 +94,9 @@ public class AgentToolDefinitions {
     private Map<String, Object> recommendProducts() {
         return Map.of(
                 "name", "recommendProducts",
-                "description", "Recommend products based on a fitness goal (e.g. muscle gain, weight loss) and optional category preference.",
+                "description", """
+                        Suggest products for a fitness goal by querying the catalog (not generic advice). \
+                        Optionally pass category slug from listCategories. For full listings use searchProducts.""",
                 "parameters", Map.of(
                         "type", "OBJECT",
                         "properties", Map.of(
@@ -97,6 +104,27 @@ public class AgentToolDefinitions {
                                 "category", Map.of("type", "STRING", "description", "Optional category slug to narrow recommendations")
                         ),
                         "required", List.of("goal")
+                )
+        );
+    }
+
+    private Map<String, Object> addProductToCart() {
+        return Map.of(
+                "name", "addProductToCart",
+                "description", """
+                        Add a product to the cart using catalog productSlug (from searchProducts or getProductDetail). \
+                        Optionally pass flavor and/or weight to pick the right variant. \
+                        Prefer this tool when the user asks in natural language (e.g. "cho whey sô cô la vào giỏ", "add 2 tubs vanilla"). \
+                        If only one variant exists or filters are omitted, picks an in-stock variant.""",
+                "parameters", Map.of(
+                        "type", "OBJECT",
+                        "properties", Map.of(
+                                "productSlug", Map.of("type", "STRING", "description", "Product slug from the catalog (not the display name)."),
+                                "flavor", Map.of("type", "STRING", "description", "Optional. Substring to match variant flavor (e.g. chocolate, dâu)."),
+                                "weight", Map.of("type", "STRING", "description", "Optional. Substring to match variant weight label (e.g. 2kg, 5lbs)."),
+                                "quantity", Map.of("type", "INTEGER", "description", "Quantity 1-10. Default 1.")
+                        ),
+                        "required", List.of("productSlug")
                 )
         );
     }

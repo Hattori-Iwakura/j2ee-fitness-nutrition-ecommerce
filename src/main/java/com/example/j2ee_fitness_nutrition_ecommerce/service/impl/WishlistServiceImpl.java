@@ -32,7 +32,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     public void addToWishlist(String userEmail, Long productId) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         if (wishlistItemRepository.existsByUserIdAndProductId(user.getId(), productId)) {
             return;
@@ -48,28 +48,28 @@ public class WishlistServiceImpl implements WishlistService {
     @Override
     @Transactional
     public void removeFromWishlist(String userEmail, Long productId) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         wishlistItemRepository.deleteByUserIdAndProductId(user.getId(), productId);
     }
 
     @Override
     public List<WishlistItem> getWishlist(String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return wishlistItemRepository.findByUserIdOrderByAddedAtDesc(user.getId());
     }
 
     @Override
     public boolean isInWishlist(String userEmail, Long productId) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return wishlistItemRepository.existsByUserIdAndProductId(user.getId(), productId);
     }
 
     @Override
     public Set<Long> getWishlistedProductIds(String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return wishlistItemRepository.findByUserIdOrderByAddedAtDesc(user.getId()).stream()
                 .map(item -> item.getProduct().getId())

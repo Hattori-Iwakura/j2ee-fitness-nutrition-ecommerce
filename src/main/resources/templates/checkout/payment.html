@@ -7,7 +7,11 @@
 <div class="container mt-4">
     <h2><i class="bi bi-credit-card"></i> Complete Payment</h2>
 
-    <div class="row">
+    <div class="alert alert-warning" th:if="${payment == null}">
+        Payment record is missing for this order. Please contact support with your order code.
+    </div>
+
+    <div class="row" th:if="${payment != null}">
         <div class="col-md-7">
             <div class="card">
                 <div class="card-header bg-dark text-white">

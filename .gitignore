@@ -41,3 +41,4 @@ docs/
 
 ### Local env (secrets) ###
 .env
+src/main/resources/application-local.properties

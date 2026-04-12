@@ -30,6 +30,8 @@ public class ContactMessage {
     @Column(nullable = false, length = 4000)
     private String message;
 
+    /** Persisted as {@code is_read} — {@code read} is a reserved word in MySQL. */
+    @Column(name = "is_read", nullable = false)
     @Builder.Default
     private boolean read = false;
 

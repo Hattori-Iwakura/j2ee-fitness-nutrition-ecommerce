@@ -20,6 +20,10 @@ public class ChatResponse {
     @Builder.Default
     private boolean error = false;
 
+    /** True only if addToCart or addProductToCart ran successfully in this request. */
+    @Builder.Default
+    private boolean cartUpdated = false;
+
     @Getter
     @Setter
     @NoArgsConstructor

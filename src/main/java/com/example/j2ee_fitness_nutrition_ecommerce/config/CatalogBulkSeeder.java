@@ -8,6 +8,7 @@ import com.example.j2ee_fitness_nutrition_ecommerce.repository.ProductRepository
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ import java.util.List;
  * and pre-workout. Idempotent: skips when the DB already has enough products.
  */
 @Configuration
+@Profile("!integrationtest")
 public class CatalogBulkSeeder {
 
     static final int TARGET_PRODUCT_COUNT = 200;

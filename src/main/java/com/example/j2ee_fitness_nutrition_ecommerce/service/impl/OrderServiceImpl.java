@@ -51,8 +51,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order createOrder(String userEmail, CheckoutRequest request, List<CartItem> cartItems, String couponCode) {
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Tài khoản không tồn tại trong hệ thống. Vui lòng đăng nhập lại."));
 
         Order order = Order.builder()
                 .orderCode("FS-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
@@ -108,7 +109,7 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         // Create payment
-        PaymentMethod paymentMethod = PaymentMethod.valueOf(request.getPaymentMethod());
+        PaymentMethod paymentMethod = parsePaymentMethod(request.getPaymentMethod());
         paymentService.createPayment(savedOrder, paymentMethod);
 
         // Send order confirmation email
@@ -119,7 +120,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> findByUserEmail(String email) {
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
     }
@@ -132,6 +133,40 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Optional<Order> findByOrderCode(String orderCode) {
         return orderRepository.findByOrderCode(orderCode);
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Optional<Order> findByOrderCodeForView(String orderCode) {
+        Optional<Order> opt = orderRepository.findByOrderCode(orderCode);
+        if (opt.isEmpty()) {
+            return opt;
+        }
+        Order o = opt.get();
+        // Touch lazy associations while session is open (avoids LazyInitializationException on success/payment views).
+        o.getUser().getEmail();
+        if (o.getPayment() != null) {
+            o.getPayment().getPaymentMethod();
+        }
+        if (o.getOrderDetails() != null) {
+            for (OrderDetail od : o.getOrderDetails()) {
+                if (od.getVariant() != null) {
+                    var v = od.getVariant();
+                    v.getFlavor();
+                    if (v.getProduct() != null) {
+                        var p = v.getProduct();
+                        p.getName();
+                        if (p.getCategory() != null) {
+                            p.getCategory().getId();
+                        }
+                        if (p.getVariants() != null) {
+                            p.getVariants().size();
+                        }
+                    }
+                }
+            }
+        }
+        return opt;
     }
 
     @Override
@@ -161,5 +196,16 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
         order.setStatus(status);
         return orderRepository.save(order);
+    }
+
+    private static PaymentMethod parsePaymentMethod(String raw) {
+        if (raw == null || raw.isBlank()) {
+            throw new IllegalStateException("Vui lòng chọn phương thức thanh toán.");
+        }
+        try {
+            return PaymentMethod.valueOf(raw.trim());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("Phương thức thanh toán không hợp lệ.");
+        }
     }
 }

@@ -7,11 +7,11 @@ import com.example.j2ee_fitness_nutrition_ecommerce.service.ProductService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.ReviewService;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.WishlistService;
 import com.example.j2ee_fitness_nutrition_ecommerce.util.PaginationHelper;
+import com.example.j2ee_fitness_nutrition_ecommerce.util.SecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +38,7 @@ public class ProductController {
     @GetMapping("/products")
     public String listProducts(@ModelAttribute ProductFilter filter,
                                @RequestParam(defaultValue = "0") int page,
-                               @AuthenticationPrincipal UserDetails userDetails,
+                               Authentication authentication,
                                Model model) {
 
         Sort sort = resolveSort(filter.getSort());
@@ -58,8 +58,9 @@ public class ProductController {
                     .ifPresent(cat -> model.addAttribute("currentCategory", cat));
         }
 
-        if (userDetails != null) {
-            model.addAttribute("wishlistedIds", wishlistService.getWishlistedProductIds(userDetails.getUsername()));
+        String email = SecurityUtils.getCurrentUserEmail(authentication);
+        if (email != null) {
+            model.addAttribute("wishlistedIds", wishlistService.getWishlistedProductIds(email));
         }
 
         return "product/list";
@@ -67,7 +68,7 @@ public class ProductController {
 
     @GetMapping("/products/{slug}")
     public String productDetail(@PathVariable String slug,
-                                @AuthenticationPrincipal UserDetails userDetails,
+                                Authentication authentication,
                                 Model model) {
         Product product = productService.findActiveBySlug(slug)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
@@ -78,9 +79,9 @@ public class ProductController {
         model.addAttribute("avgRating", reviewService.getAverageRating(product.getId()));
         model.addAttribute("reviewCount", reviewService.getReviewCount(product.getId()));
 
-        // Auth-dependent attributes
-        if (userDetails != null) {
-            String email = userDetails.getUsername();
+        // Auth-dependent attributes (form login + OAuth2)
+        String email = SecurityUtils.getCurrentUserEmail(authentication);
+        if (email != null) {
             model.addAttribute("isWishlisted", wishlistService.isInWishlist(email, product.getId()));
             model.addAttribute("canReview", reviewService.hasUserPurchasedProduct(email, product.getId())
                     && !reviewService.hasUserReviewedProduct(email, product.getId()));

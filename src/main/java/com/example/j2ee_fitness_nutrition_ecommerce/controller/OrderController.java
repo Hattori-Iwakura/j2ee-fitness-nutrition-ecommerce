@@ -2,8 +2,8 @@ package com.example.j2ee_fitness_nutrition_ecommerce.controller;
 
 import com.example.j2ee_fitness_nutrition_ecommerce.entity.Order;
 import com.example.j2ee_fitness_nutrition_ecommerce.service.OrderService;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.example.j2ee_fitness_nutrition_ecommerce.util.SecurityUtils;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,20 +21,22 @@ public class OrderController {
     }
 
     @GetMapping
-    public String myOrders(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        model.addAttribute("orders", orderService.findByUserEmail(userDetails.getUsername()));
+    public String myOrders(Authentication authentication, Model model) {
+        String email = SecurityUtils.requireUserEmail(authentication);
+        model.addAttribute("orders", orderService.findByUserEmail(email));
         return "order/list";
     }
 
     @GetMapping("/{id}")
     public String orderDetail(@PathVariable Long id,
-                              @AuthenticationPrincipal UserDetails userDetails,
+                              Authentication authentication,
                               Model model) {
+        String email = SecurityUtils.requireUserEmail(authentication);
         Order order = orderService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
 
         // Verify the order belongs to the authenticated user
-        if (!order.getUser().getEmail().equals(userDetails.getUsername())) {
+        if (!order.getUser().getEmail().equals(email)) {
             throw new org.springframework.security.access.AccessDeniedException("Access denied");
         }
 

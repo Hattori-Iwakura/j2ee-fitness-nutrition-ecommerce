@@ -20,7 +20,7 @@ public class StockLog {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "product_variant_id", nullable = false)
+    @JoinColumn(name = "variant_id", nullable = false)
     private ProductVariant variant;
 
     @Column(nullable = false)
@@ -28,6 +28,10 @@ public class StockLog {
 
     @Column(nullable = false)
     private int stockAfter;
+
+    /** Signed change in units (e.g. negative when stock decreases on sale). */
+    @Column(name = "quantity_delta", nullable = false)
+    private int quantityDelta;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)

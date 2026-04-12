@@ -18,17 +18,19 @@ services:
       retries: 5
 
   # Run with: docker compose --profile docker-app up --build
-  # Default `docker compose up` / Spring Boot Docker Compose only starts MySQL (local dev uses mvnw on 8080).
+  # Default `docker compose up` / Spring Boot Docker Compose only starts MySQL (local dev: mvnw defaults to port 8082).
   app:
     profiles:
       - docker-app
     build: .
     container_name: fitness-app
-    # Host 8081 avoids clashing with local .\mvnw.cmd spring-boot:run (8080)
+    # Host 8082 → container 8080 (same URL as local: .\mvnw spring-boot:run — session + chat + cart share one origin)
     ports:
-      - '8081:8080'
+      - '8082:8080'
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      # Chat/Gemini: set GEMINI_API_KEY in a local .env file (see .gitignore) or export before compose up
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     depends_on:
       mysql:
         condition: service_healthy

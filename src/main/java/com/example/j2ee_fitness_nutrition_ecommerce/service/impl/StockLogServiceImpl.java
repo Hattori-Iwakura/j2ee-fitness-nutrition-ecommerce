@@ -25,10 +25,12 @@ public class StockLogServiceImpl implements StockLogService {
         if (stockBefore == stockAfter) {
             return;
         }
+        int quantityDelta = stockAfter - stockBefore;
         StockLog entry = StockLog.builder()
                 .variant(variant)
                 .stockBefore(stockBefore)
                 .stockAfter(stockAfter)
+                .quantityDelta(quantityDelta)
                 .changeType(changeType)
                 .build();
         stockLogRepository.save(entry);

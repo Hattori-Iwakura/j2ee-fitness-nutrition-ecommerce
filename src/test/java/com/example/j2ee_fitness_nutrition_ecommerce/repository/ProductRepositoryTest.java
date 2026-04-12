@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -23,17 +24,18 @@ class ProductRepositoryTest {
     @Autowired private TestEntityManager entityManager;
 
     private Category category;
+    private Product activeProduct;
 
     @BeforeEach
     void setUp() {
         category = Category.builder().name("Protein").slug("protein").active(true).build();
         entityManager.persist(category);
 
-        Product active = Product.builder().name("Whey Gold").slug("whey-gold")
+        activeProduct = Product.builder().name("Whey Gold").slug("whey-gold")
                 .active(true).category(category).build();
         Product inactive = Product.builder().name("Old Product").slug("old-product")
                 .active(false).category(category).build();
-        entityManager.persist(active);
+        entityManager.persist(activeProduct);
         entityManager.persist(inactive);
         entityManager.flush();
     }
@@ -67,5 +69,18 @@ class ProductRepositoryTest {
 
         Optional<Product> inactive = productRepository.findBySlugAndActiveTrue("old-product");
         assertThat(inactive).isEmpty();
+    }
+
+    @Test
+    void findCoPurchasedProducts_noOrderHistory_returnsEmpty() {
+        List<Product> result = productRepository.findCoPurchasedProducts(
+                activeProduct.getId(), PageRequest.of(0, 4));
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void findBestSellers_noOrders_returnsEmpty() {
+        List<Product> result = productRepository.findBestSellers(PageRequest.of(0, 4));
+        assertThat(result).isEmpty();
     }
 }

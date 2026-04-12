@@ -62,7 +62,7 @@ class OrderServiceImplTest {
         CartItem cartItem = new CartItem(1L, "Whey Protein", "Chocolate", "2kg",
                 new BigDecimal("500000"), 2, null);
 
-        when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase("user@test.com")).thenReturn(Optional.of(user));
         when(variantRepository.findById(1L)).thenReturn(Optional.of(variant));
         when(orderRepository.save(any(Order.class))).thenAnswer(inv -> {
             Order o = inv.getArgument(0);
@@ -94,7 +94,7 @@ class OrderServiceImplTest {
 
         Coupon coupon = Coupon.builder().id(1L).code("SAVE10").active(true).build();
 
-        when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase("user@test.com")).thenReturn(Optional.of(user));
         when(variantRepository.findById(1L)).thenReturn(Optional.of(variant));
         when(couponService.validate(eq("SAVE10"), any(BigDecimal.class))).thenReturn(coupon);
         when(couponService.calculateDiscount(eq(coupon), any(BigDecimal.class)))
@@ -125,12 +125,80 @@ class OrderServiceImplTest {
         CartItem cartItem = new CartItem(1L, "Whey Protein", "Chocolate", "2kg",
                 new BigDecimal("500000"), 5, null);
 
-        when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase("user@test.com")).thenReturn(Optional.of(user));
         when(variantRepository.findById(1L)).thenReturn(Optional.of(variant));
 
         assertThatThrownBy(() -> orderService.createOrder("user@test.com", request, List.of(cartItem), null))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Insufficient stock");
+    }
+
+    @Test
+    void createOrder_variantNotFound_throwsIllegalArgumentException() {
+        CheckoutRequest request = new CheckoutRequest();
+        request.setFullName("Test User");
+        request.setPhone("0123456789");
+        request.setAddress("123 Street");
+        request.setPaymentMethod("COD");
+
+        CartItem cartItem = new CartItem(99L, "X", "A", "1kg", new BigDecimal("100"), 1, null);
+
+        when(userRepository.findByEmailIgnoreCase("user@test.com")).thenReturn(Optional.of(user));
+        when(variantRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> orderService.createOrder("user@test.com", request, List.of(cartItem), null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Variant not found");
+    }
+
+    @Test
+    void createOrder_invalidPaymentMethod_throwsIllegalStateException() {
+        CheckoutRequest request = new CheckoutRequest();
+        request.setFullName("Test User");
+        request.setPhone("0123456789");
+        request.setAddress("123 Street");
+        request.setPaymentMethod("NOT_A_REAL_METHOD");
+
+        CartItem cartItem = new CartItem(1L, "Whey Protein", "Chocolate", "2kg",
+                new BigDecimal("500000"), 1, null);
+
+        when(userRepository.findByEmailIgnoreCase("user@test.com")).thenReturn(Optional.of(user));
+        when(variantRepository.findById(1L)).thenReturn(Optional.of(variant));
+        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> {
+            Order o = inv.getArgument(0);
+            o.setId(1L);
+            return o;
+        });
+
+        assertThatThrownBy(() -> orderService.createOrder("user@test.com", request, List.of(cartItem), null))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Phương thức thanh toán");
+        verify(paymentService, never()).createPayment(any(), any());
+        verify(emailService, never()).sendOrderConfirmation(any());
+    }
+
+    @Test
+    void createOrder_bankTransfer_invokesPaymentServiceWithBankTransfer() {
+        CheckoutRequest request = new CheckoutRequest();
+        request.setFullName("Test User");
+        request.setPhone("0123456789");
+        request.setAddress("123 Street");
+        request.setPaymentMethod("BANK_TRANSFER");
+
+        CartItem cartItem = new CartItem(1L, "Whey Protein", "Chocolate", "2kg",
+                new BigDecimal("500000"), 1, null);
+
+        when(userRepository.findByEmailIgnoreCase("user@test.com")).thenReturn(Optional.of(user));
+        when(variantRepository.findById(1L)).thenReturn(Optional.of(variant));
+        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> {
+            Order o = inv.getArgument(0);
+            o.setId(1L);
+            return o;
+        });
+
+        orderService.createOrder("user@test.com", request, List.of(cartItem), null);
+
+        verify(paymentService).createPayment(any(Order.class), eq(PaymentMethod.BANK_TRANSFER));
     }
 
     @Test
@@ -154,7 +222,7 @@ class OrderServiceImplTest {
 
     @Test
     void findByUserEmail_success() {
-        when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase("user@test.com")).thenReturn(Optional.of(user));
         when(orderRepository.findByUserIdOrderByCreatedAtDesc(1L)).thenReturn(List.of());
 
         List<Order> result = orderService.findByUserEmail("user@test.com");

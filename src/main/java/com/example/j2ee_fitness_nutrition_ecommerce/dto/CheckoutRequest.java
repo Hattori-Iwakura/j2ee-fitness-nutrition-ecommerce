@@ -28,5 +28,5 @@ public class CheckoutRequest {
     private String couponCode;
 
     @NotBlank(message = "Payment method is required")
-    private String paymentMethod;
+    private String paymentMethod = "COD";
 }

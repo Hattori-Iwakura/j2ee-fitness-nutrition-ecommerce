@@ -15,6 +15,9 @@ public interface OrderService {
     List<Order> findByUserEmail(String email);
     Optional<Order> findById(Long id);
     Optional<Order> findByOrderCode(String orderCode);
+
+    /** Loads order with associations initialized (safe for Thymeleaf / no lazy errors). */
+    Optional<Order> findByOrderCodeForView(String orderCode);
     List<Order> findAll();
     Page<Order> findAll(Pageable pageable);
     Page<Order> findByStatus(OrderStatus status, Pageable pageable);
